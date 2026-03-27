@@ -11,8 +11,8 @@ export { SortableHeader, BadgeBoolean, BadgeText } from "./DataTableColumns";
 export type { BadgeVariant } from "./DataTableColumns";
 
 // ─── Filtros avanzados ────────────────────────────────────────────────────────
-export { FilterTable } from "./FilterTable";
-export type { FilterType, FilterOption } from "./FilterTable";
+export { FilterTable } from "../FilterTable";
+export type { FilterType, FilterOption, FilterTableProps } from "../FilterTable";
 
 // ─── Helpers de FilterTable ───────────────────────────────────────────────────
 export { getBooleanValue, getValidBoolean, parseBooleanParam } from "./filterTable-helper";
