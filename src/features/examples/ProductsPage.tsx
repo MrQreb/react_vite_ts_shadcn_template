@@ -9,7 +9,7 @@ import {
   BadgeBoolean,
   BadgeText,
   useDataTable,
-  useRowSelectionExport,
+  useCsvExport,
   type FilterType,
 } from "@/custom-components/DataTable";
 
@@ -166,8 +166,9 @@ export default function ProductsPage() {
   const totalPages = Math.max(1, Math.ceil(filtrados.length / queryParams.pageSize));
   const page = Math.min(queryParams.page, totalPages);
   const pageData = filtrados.slice((page - 1) * queryParams.pageSize, page * queryParams.pageSize);
-  const { getRowsForExport } = useRowSelectionExport(seleccionados, pageData);
   // ──────────────────────────────────────────────────────────────────────────
+
+  const handleExportCSV = useCsvExport<Product>({ fileName: "productos.csv" });
 
   const metricas = calcularMetricas(PRODUCTS);
 
@@ -181,21 +182,6 @@ export default function ProductsPage() {
       onChange: setCategoria,
     },
   ];
-
-  // Exporta solo las columnas visibles priorizando filas seleccionadas
-  const handleExportCSV: DataTableProps<Product>["onExportCSV"] = ({
-    visibleHeaders,
-    getRowValues,
-    rowsForExport,
-  }) => {
-    const finalRows = (getRowsForExport(true).length ? getRowsForExport(true) : rowsForExport).map(getRowValues);
-    const csv = [visibleHeaders, ...finalRows].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "productos.csv";
-    a.click();
-  };
 
   const handleResetAll = () => {
     setCategoria("");
@@ -322,6 +308,3 @@ function MetricCard({ icon, label, value, bg }: {
     </Card>
   );
 }
-
-// ─── Tipo auxiliar para tipar el callback de CSV ──────────────────────────────
-type DataTableProps<T> = import("@/custom-components/DataTable").DataTableProps<T>;

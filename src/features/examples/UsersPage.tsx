@@ -12,7 +12,7 @@ import {
   BadgeText,
   useDataTable,
   parseBooleanParam,
-  useRowSelectionExport,
+  useCsvExport,
   type FilterType,
 } from "@/custom-components/DataTable";
 
@@ -246,8 +246,25 @@ export default function UsersPage() {
   const page = Math.min(queryParams.page, totalPages);
   const pageData = filtrados.slice((page - 1) * queryParams.pageSize, page * queryParams.pageSize);
 
-  const { getRowsForExport } = useRowSelectionExport(seleccionados, pageData);
+  const exportCsv = useCsvExport<User>({ fileName: "usuarios.csv" });
 
+  // Solo exporta Nombre y Correo (sin depender de columnas visibles)
+  const handleExportCSV: Parameters<typeof DataTable<User>>[0]["onExportCSV"] = ({
+    selectedRows,
+    rowsForExport,
+  }) => {
+    const columns = [
+      { label: "Nombre", accessor: (u: User) => u.name },
+      { label: "Correo", accessor: (u: User) => u.email },
+    ];
+
+    exportCsv({
+      visibleHeaders: columns.map((c) => c.label),
+      getRowValues: (row: User) => columns.map((c) => String(c.accessor(row) ?? "")),
+      selectedRows,
+      rowsForExport,
+    });
+  };
 
   // ──────────────────────────────────────────────────────────────────────────
 
@@ -265,21 +282,6 @@ export default function UsersPage() {
       value: activo, options: ESTADO_OPTIONS, onChange: setActivo,
     },
   ];
-
-  const handleExportCSV: Parameters<typeof DataTable<User>>[0]["onExportCSV"] = ({
-    visibleHeaders,
-    getRowValues,
-    rowsForExport,
-  }) => {
-    const finalRows = (getRowsForExport(true).length ? getRowsForExport(true) : rowsForExport).map(getRowValues);
-
-    const csv = [visibleHeaders, ...finalRows].map((r) => r.join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "usuarios.csv";
-    a.click();
-  };
 
   const handleResetAll = () => {
     setRol("");

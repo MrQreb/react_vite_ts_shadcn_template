@@ -20,3 +20,4 @@ export { getBooleanValue, getValidBoolean, parseBooleanParam } from "./filterTab
 // ─── Hook de sincronización con URL ──────────────────────────────────────────
 export { useDataTable } from "./hooks/useDataTable";
 export { useRowSelectionExport } from "./hooks/useRowSelectionExport";
+export { useCsvExport } from "./hooks/useCsvExport";
