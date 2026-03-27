@@ -12,6 +12,7 @@ import {
   BadgeText,
   useDataTable,
   parseBooleanParam,
+  useRowSelectionExport,
   type FilterType,
 } from "@/custom-components/DataTable";
 
@@ -29,26 +30,109 @@ interface User {
 // ─── Datos estáticos ──────────────────────────────────────────────────────────
 
 const USERS: User[] = [
-  { id: 1,  name: "Ana García",        email: "ana@example.com",       role: "admin",  active: true,  createdAt: "2024-01-15" },
-  { id: 2,  name: "Luis Martínez",     email: "luis@example.com",      role: "editor", active: true,  createdAt: "2024-02-20" },
-  { id: 3,  name: "María López",       email: "maria@example.com",     role: "viewer", active: false, createdAt: "2024-03-05" },
-  { id: 4,  name: "Carlos Ramírez",    email: "carlos@example.com",    role: "editor", active: true,  createdAt: "2024-03-18" },
-  { id: 5,  name: "Elena Torres",      email: "elena@example.com",     role: "admin",  active: true,  createdAt: "2024-04-01" },
-  { id: 6,  name: "José Hernández",    email: "jose@example.com",      role: "viewer", active: false, createdAt: "2024-04-15" },
-  { id: 7,  name: "Patricia Sánchez",  email: "patricia@example.com",  role: "editor", active: true,  createdAt: "2024-05-10" },
-  { id: 8,  name: "Miguel Flores",     email: "miguel@example.com",    role: "viewer", active: true,  createdAt: "2024-05-22" },
-  { id: 9,  name: "Sofía Reyes",       email: "sofia@example.com",     role: "admin",  active: false, createdAt: "2024-06-01" },
-  { id: 10, name: "Diego Morales",     email: "diego@example.com",     role: "editor", active: true,  createdAt: "2024-06-15" },
-  { id: 11, name: "Valentina Cruz",    email: "valentina@example.com", role: "viewer", active: true,  createdAt: "2024-07-03" },
-  { id: 12, name: "Andrés Vega",       email: "andres@example.com",    role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 1, name: "Ana García", email: "ana@example.com", role: "admin", active: true, createdAt: "2024-01-15" },
+  { id: 2, name: "Luis Martínez", email: "luis@example.com", role: "editor", active: true, createdAt: "2024-02-20" },
+  { id: 3, name: "María López", email: "maria@example.com", role: "viewer", active: false, createdAt: "2024-03-05" },
+  { id: 4, name: "Carlos Ramírez", email: "carlos@example.com", role: "editor", active: true, createdAt: "2024-03-18" },
+  { id: 5, name: "Elena Torres", email: "elena@example.com", role: "admin", active: true, createdAt: "2024-04-01" },
+  { id: 6, name: "José Hernández", email: "jose@example.com", role: "viewer", active: false, createdAt: "2024-04-15" },
+  { id: 7, name: "Patricia Sánchez", email: "patricia@example.com", role: "editor", active: true, createdAt: "2024-05-10" },
+  { id: 8, name: "Miguel Flores", email: "miguel@example.com", role: "viewer", active: true, createdAt: "2024-05-22" },
+  { id: 9, name: "Sofía Reyes", email: "sofia@example.com", role: "admin", active: false, createdAt: "2024-06-01" },
+  { id: 10, name: "Diego Morales", email: "diego@example.com", role: "editor", active: true, createdAt: "2024-06-15" },
+  { id: 11, name: "Valentina Cruz", email: "valentina@example.com", role: "viewer", active: true, createdAt: "2024-07-03" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
+  { id: 12, name: "Andrés Vega", email: "andres@example.com", role: "editor", active: false, createdAt: "2024-07-20" },
 ];
 
 const ROLE_VARIANTS = { admin: "red", editor: "blue", viewer: "gray" } as const;
-const ROLE_LABELS   = { admin: "Admin", editor: "Editor", viewer: "Visor" } as const;
+const ROLE_LABELS = { admin: "Admin", editor: "Editor", viewer: "Visor" } as const;
 
-const ROL_OPTIONS    = Object.entries(ROLE_LABELS).map(([v, l]) => ({ value: v, label: l }));
+const ROL_OPTIONS = Object.entries(ROLE_LABELS).map(([v, l]) => ({ value: v, label: l }));
 const ESTADO_OPTIONS = [
-  { value: "true",  label: "Activos" },
+  { value: "true", label: "Activos" },
   { value: "false", label: "Inactivos" },
 ];
 
@@ -80,7 +164,7 @@ const columns: ColumnDef<User, any>[] = [
   },
   {
     accessorKey: "email",
-    size: 0,
+    // size: 0,
     meta: { label: "Correo" },
     header: "Correo",
     // Se oculta por defecto — ya se muestra en la columna "Usuario"
@@ -94,7 +178,7 @@ const columns: ColumnDef<User, any>[] = [
   },
   {
     accessorKey: "role",
-    size: 100,
+    size: 300,
     meta: { label: "Rol" },
     header: "Rol",
     cell: ({ getValue }) => {
@@ -104,7 +188,7 @@ const columns: ColumnDef<User, any>[] = [
   },
   {
     accessorKey: "active",
-    size: 100,
+    // size: 100,
     meta: { label: "Estado" },
     header: "Estado",
     cell: ({ getValue }) => (
@@ -113,7 +197,7 @@ const columns: ColumnDef<User, any>[] = [
   },
   {
     accessorKey: "createdAt",
-    size: 120,
+    // size: 120,
     meta: { label: "Registro" },
     header: ({ column }) => <SortableHeader column={column} title="Registro" />,
     cell: ({ getValue }) => (
@@ -139,8 +223,11 @@ const columns: ColumnDef<User, any>[] = [
  * ```
  */
 export default function UsersPage() {
-  const { queryParams, updateQueryParams } = useDataTable({ defaults: { pageSize: 5 } });
-  const [rol, setRol]       = useState<string>((queryParams.rol as string) ?? "");
+  const { queryParams, updateQueryParams, resetQueryParams } = useDataTable({
+    defaults: { pageSize: 30 },
+    filterKeys: ["rol", "activo"],
+  });
+  const [rol, setRol] = useState<string>((queryParams.rol as string) ?? "");
   const [activo, setActivo] = useState<string>((queryParams.activo as string) ?? "");
   const [seleccionados, setSeleccionados] = useState<User[]>([]);
 
@@ -150,19 +237,23 @@ export default function UsersPage() {
   const filtrados = USERS.filter((u) => {
     const q = (queryParams.search ?? "").toLowerCase();
     const matchSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
-    const matchRol    = !queryParams.rol || u.role === queryParams.rol;
+    const matchRol = !queryParams.rol || u.role === queryParams.rol;
     const matchActivo = activoBool === undefined || u.active === activoBool;
     return matchSearch && matchRol && matchActivo;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtrados.length / queryParams.pageSize));
-  const page       = Math.min(queryParams.page, totalPages);
-  const pageData   = filtrados.slice((page - 1) * queryParams.pageSize, page * queryParams.pageSize);
+  const page = Math.min(queryParams.page, totalPages);
+  const pageData = filtrados.slice((page - 1) * queryParams.pageSize, page * queryParams.pageSize);
+
+  const { getRowsForExport } = useRowSelectionExport(seleccionados, pageData);
+
+
   // ──────────────────────────────────────────────────────────────────────────
 
-  const activos   = USERS.filter((u) => u.active).length;
+  const activos = USERS.filter((u) => u.active).length;
   const inactivos = USERS.length - activos;
-  const admins    = USERS.filter((u) => u.role === "admin").length;
+  const admins = USERS.filter((u) => u.role === "admin").length;
 
   const filtros: FilterType[] = [
     {
@@ -178,14 +269,23 @@ export default function UsersPage() {
   const handleExportCSV: Parameters<typeof DataTable<User>>[0]["onExportCSV"] = ({
     visibleHeaders,
     getRowValues,
+    rowsForExport,
   }) => {
-    const rows = filtrados.map(getRowValues);
-    const csv  = [visibleHeaders, ...rows].map((r) => r.join(",")).join("\n");
+    const finalRows = (getRowsForExport(true).length ? getRowsForExport(true) : rowsForExport).map(getRowValues);
+
+    const csv = [visibleHeaders, ...finalRows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
-    const a    = document.createElement("a");
-    a.href     = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
     a.download = "usuarios.csv";
     a.click();
+  };
+
+  const handleResetAll = () => {
+    setRol("");
+    setActivo("");
+    setSeleccionados([]);
+    resetQueryParams();
   };
 
   return (
@@ -211,7 +311,7 @@ export default function UsersPage() {
         {/* Métricas */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard icon={<UserCheck className="h-4 w-4 text-emerald-600" />} label="Activos" value={activos} bg="bg-emerald-50 dark:bg-emerald-950/30" />
-          <StatCard icon={<UserX className="h-4 w-4 text-red-500" />}        label="Inactivos" value={inactivos} bg="bg-red-50 dark:bg-red-950/30" />
+          <StatCard icon={<UserX className="h-4 w-4 text-red-500" />} label="Inactivos" value={inactivos} bg="bg-red-50 dark:bg-red-950/30" />
           <StatCard icon={<ShieldCheck className="h-4 w-4 text-violet-600" />} label="Admins" value={admins} bg="bg-violet-50 dark:bg-violet-950/30" />
         </div>
 
@@ -245,18 +345,20 @@ export default function UsersPage() {
               queryParams={{ ...queryParams, page }}
               onQueryChange={updateQueryParams}
               onExportCSV={handleExportCSV}
+              onResetAll={handleResetAll}
               enableRowSelection
               onRowSelectionChange={setSeleccionados}
               toolbar={
                 <FilterTable
                   filters={filtros}
-                  onApply={() =>
-                    updateQueryParams({ rol: rol || undefined, activo: activo || undefined, page: 1 })
-                  }
-                  onClear={() => {
-                    setRol(""); setActivo("");
-                    updateQueryParams({ rol: undefined, activo: undefined, page: 1 });
+                  onApply={(draft) => {
+                    const nextRol = (draft.find((f) => f.key === "rol")?.value as string) ?? "";
+                    const nextActivo = (draft.find((f) => f.key === "activo")?.value as string) ?? "";
+                    setRol(nextRol);
+                    setActivo(nextActivo);
+                    updateQueryParams({ rol: nextRol || undefined, activo: nextActivo || undefined, page: 1 });
                   }}
+                  onClear={handleResetAll}
                 />
               }
             />

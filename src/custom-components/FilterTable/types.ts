@@ -45,8 +45,11 @@ export type FilterType =
  */
 export interface FilterTableProps {
   filters: FilterType[];
-  /** Se invoca al hacer clic en "Aplicar". Aquí debes actualizar los query params. */
-  onApply: () => void;
+  /**
+   * Se invoca al hacer clic en "Aplicar" con los filtros locales actuales.
+   * Úsalo para actualizar query params con los valores ya seleccionados.
+   */
+  onApply: (draftFilters: FilterType[]) => void;
   /** Se invoca al limpiar todos los filtros. */
   onClear: () => void;
   /** Opcional: limpiar la búsqueda global del DataTable cuando se limpian filtros. */

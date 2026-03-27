@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ interface DataTablePaginationProps {
 }
 
 /** Opciones de tamaño de página disponibles */
-const PAGE_SIZES = [10, 25, 50, 100, 200] as const;
+const PAGE_SIZES = [10, 50, 100, 200, 500] as const;
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -74,14 +75,18 @@ export function DataTablePagination({
 }: DataTablePaginationProps) {
   const isFirstPage = page <= 1;
   const isLastPage = page >= totalPages || totalPages === 0;
+  const resolvedPageSize = pageSize || PAGE_SIZES[1];
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-1 py-2 text-sm text-muted-foreground">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-2 py-3 text-sm text-muted-foreground rounded-lg border bg-muted/50">
       {/* Información de registros */}
-      <div className="flex flex-col gap-0.5">
-        <span>
-          {rowCount} {rowCount === 1 ? "fila" : "filas"} en esta página
-        </span>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="text-[11px] px-2 py-1">
+            {rowCount} {rowCount === 1 ? "fila" : "filas"}
+          </Badge>
+          <span className="text-xs">en esta página</span>
+        </div>
         {totalRecords !== undefined && (
           <span className="text-xs">
             {totalRecords.toLocaleString("es-MX")} registros en total
@@ -97,19 +102,20 @@ export function DataTablePagination({
       {/* Controles */}
       <div className="flex flex-wrap items-center gap-2">
         {/* Botón para limpiar filtros */}
-        <Button variant="ghost" size="sm" onClick={onReset} className="h-8 text-xs">
+        <Button variant="secondary" size="sm" onClick={onReset} className="h-8 text-xs px-3">
           Borrar filtros
         </Button>
 
         {/* Selector de registros por página */}
         <Select
-          value={String(pageSize)}
+          value={String(resolvedPageSize)}
+          defaultValue={String(PAGE_SIZES[1])}
           onValueChange={(v) => onPageSizeChange(Number(v))}
         >
-          <SelectTrigger className="h-8 w-[110px] text-xs">
+          <SelectTrigger className="h-9 w-[140px] text-xs">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent align="end">
             {PAGE_SIZES.map((s) => (
               <SelectItem key={s} value={String(s)} className="text-xs">
                 {s} / página

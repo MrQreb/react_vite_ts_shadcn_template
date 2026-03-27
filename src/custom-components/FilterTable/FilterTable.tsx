@@ -35,11 +35,16 @@ export function FilterTable({ filters, onApply, onClear, onClearSearch }: Filter
     []
   );
 
+  const hasPendingChanges = useMemo(
+    () => JSON.stringify(localFilters) !== JSON.stringify(filters),
+    [localFilters, filters]
+  );
+
   const apply = useCallback(() => {
     localFilters.forEach((localFilter) =>
       filters.find((filter) => filter.key === localFilter.key)?.onChange(localFilter.value as any)
     );
-    onApply();
+    onApply(localFilters);
     setOpen(false);
   }, [localFilters, filters, onApply]);
 
@@ -57,10 +62,10 @@ export function FilterTable({ filters, onApply, onClear, onClearSearch }: Filter
       setLocalFilters((previous) =>
         previous.map((filter) => (filter.key === key ? { ...filter, value: emptyValue } : filter))
       );
-      filters.find((filter) => filter.key === key)?.onChange(emptyValue as any);
-      setTimeout(onApply, 0);
+      // No aplicamos hasta que el usuario confirme con "Aplicar"
+      setOpen(true);
     },
-    [filters, onApply]
+    []
   );
 
   const activeFilters = useMemo(() => localFilters.filter(hasValue), [localFilters]);
@@ -72,10 +77,17 @@ export function FilterTable({ filters, onApply, onClear, onClearSearch }: Filter
           <Button
             variant="outline"
             size="sm"
-            className={cn("h-9 gap-2 transition-all", open && "border-primary/60 bg-accent")}
+            className={cn(
+              "h-9 gap-2 transition-all relative",
+              open && "border-primary/60 bg-accent",
+              hasPendingChanges && "ring-1 ring-primary/40"
+            )}
           >
             <SlidersHorizontal className="h-4 w-4" />
             Filtros
+            {hasPendingChanges && (
+              <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-amber-500 shadow-sm" />
+            )}
             {activeFilters.length > 0 && (
               <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold">
                 {activeFilters.length}

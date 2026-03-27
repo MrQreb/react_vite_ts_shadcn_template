@@ -10,6 +10,11 @@ interface UseDataTableOptions {
    * Se usan cuando la URL no tiene el parámetro definido.
    */
   defaults?: Partial<QueryParams>;
+  /**
+   * Lista de claves de filtros que deseas limpiar cuando se resetea la tabla.
+   * Ejemplo: `["rol", "activo"]`
+   */
+  filterKeys?: string[];
 }
 
 interface UseDataTableReturn {
@@ -26,7 +31,7 @@ interface UseDataTableReturn {
   updateQueryParams: (updates: Partial<QueryParams>) => void;
   /**
    * Limpia todos los filtros y regresa a la primera página.
-   * Conserva el `pageSize` por defecto.
+   * Conserva el `pageSize` por defecto y elimina los filtros definidos en `filterKeys`.
    */
   resetQueryParams: () => void;
 }
@@ -73,6 +78,7 @@ interface UseDataTableReturn {
  */
 export function useDataTable({
   defaults = {},
+  filterKeys = [],
 }: UseDataTableOptions = {}): UseDataTableReturn {
   const navigate = useNavigate();
   const search = useSearch({ strict: false }) as Record<string, any>;
@@ -91,7 +97,7 @@ export function useDataTable({
 
     return {
       page: Number(search.page) || defaults.page || 1,
-      pageSize: Number(search.pageSize) || defaults.pageSize || 10,
+      pageSize: Number(search.pageSize) || defaults.pageSize || 50,
       search: search.search ?? defaults.search ?? "",
       ...extraParams,
     };
@@ -127,12 +133,18 @@ export function useDataTable({
    */
   const resetQueryParams = useCallback(() => {
     navigate({
-      search: {
-        page: 1,
-        pageSize: defaults.pageSize ?? 10,
+      search: () => {
+        const next: Record<string, any> = {
+          page: 1,
+          pageSize: defaults.pageSize ?? 50,
+        };
+
+        // Elimina filtros configurados en `filterKeys` y limpia búsqueda global
+        filterKeys.forEach((key) => delete next[key]);
+        return next;
       },
     });
-  }, [navigate, defaults.pageSize]);
+  }, [navigate, defaults.pageSize, filterKeys]);
 
   return { queryParams, updateQueryParams, resetQueryParams };
 }

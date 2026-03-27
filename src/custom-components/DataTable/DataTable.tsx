@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -68,9 +68,16 @@ export interface DataTableProps<TData> {
     getRowValues: (row: TData) => string[];
     /** Filas actualmente seleccionadas (vacío si no hay selección). */
     selectedRows: TData[];
+    /** Filas que se exportarán cuando no hay selección (fallback). */
+    rowsForExport: TData[];
   }) => void;
   /** Slot para contenido extra en la toolbar (ej. `<FilterTable />`) */
   toolbar?: React.ReactNode;
+  /**
+   * Callback global de reseteo (búsqueda, filtros, página, etc.).
+   * Úsalo para limpiar query params y estados compartidos con paginación.
+   */
+  onResetAll?: () => void;
   /** Muestra skeletons en lugar de filas */
   loading?: boolean;
   /** Habilita el redimensionamiento de columnas. Default: `true` */
@@ -88,6 +95,8 @@ export interface DataTableProps<TData> {
   onRowSelectionChange?: (rows: TData[]) => void;
   /** Título visible encima de la tabla */
   title?: string;
+  /** Altura máxima del cuerpo de la tabla antes de mostrar scroll vertical. */
+  bodyMaxHeight?: string | number;
 }
 
 // ─── Columna de selección ────────────────────────────────────────────────────
@@ -157,11 +166,13 @@ export function DataTable<TData>({
   onQueryChange,
   onExportCSV,
   toolbar,
+  onResetAll,
   loading = false,
   enableResizing = true,
   enableRowSelection = false,
   onRowSelectionChange,
   title,
+  bodyMaxHeight = "70vh",
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -170,17 +181,16 @@ export function DataTable<TData>({
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
   const [globalFilter, setGlobalFilter] = useState(queryParams.search ?? "");
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
   // Mantener sincronizado el campo de búsqueda cuando cambian los query params externamente
   useEffect(() => {
     setGlobalFilter(queryParams.search ?? "");
   }, [queryParams.search]);
 
   // Prepend columna de selección si está habilitada
-  const columns = enableRowSelection
-    ? [crearColumnaSeleccion<TData>(), ...columnsProp]
-    : columnsProp;
+  const columns = useMemo(
+    () => (enableRowSelection ? [crearColumnaSeleccion<TData>(), ...columnsProp] : columnsProp),
+    [columnsProp, enableRowSelection]
+  );
 
   const table = useReactTable({
     data,
@@ -243,9 +253,24 @@ export function DataTable<TData>({
       });
 
     const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original as TData);
+    const rowsForExport = selectedRows.length > 0 ? selectedRows : data;
 
-    onExportCSV({ visibleHeaders, getRowValues, selectedRows });
-  }, [table, onExportCSV]);
+    onExportCSV({ visibleHeaders, getRowValues, selectedRows, rowsForExport });
+  }, [table, onExportCSV, data]);
+
+  const handleReset = useCallback(() => {
+    setColumnFilters([]);
+    setSorting([]);
+    setColumnVisibility({});
+    setRowSelection({});
+    setColumnSizing({});
+    table.resetColumnFilters();
+    table.resetSorting();
+    table.resetColumnVisibility();
+    table.resetRowSelection();
+    setGlobalFilter("");
+    onResetAll ? onResetAll() : onQueryChange({ page: 1, search: "" });
+  }, [table, onResetAll, onQueryChange]);
 
   // ── Conteo de seleccionados ───────────────────────────────────────────────
   const seleccionados = table.getSelectedRowModel().rows.length;
@@ -288,86 +313,87 @@ export function DataTable<TData>({
       )}
 
       {/* Tabla */}
-      <div ref={containerRef} className="rounded-md border overflow-x-auto">
-        <Table style={{ width: enableResizing ? table.getTotalSize() : "100%" }}>
-          <TableHeader>
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id} className="bg-muted/50 hover:bg-muted/50">
-                {hg.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: header.getSize(), position: "relative" }}
-                    className="font-semibold text-foreground select-none"
-                    /**
-                     * Doble clic en la cabecera → oculta la columna.
-                     * No aplica a la columna de selección ni a columnas no ocultables.
-                     */
-                    onDoubleClick={() => {
-                      if (header.column.getCanHide()) {
-                        header.column.toggleVisibility(false);
-                      }
-                    }}
-                    title={header.column.getCanHide() ? "Doble clic para ocultar columna" : undefined}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+      <div className="rounded-lg border overflow-hidden w-full">
+        <div className="overflow-x-auto w-full">
+          <div className="overflow-y-auto w-full" style={{ maxHeight: bodyMaxHeight }}>
+            <Table
+              className="min-w-full"
+              style={{
+                width: "100%",
+                minWidth: enableResizing ? table.getTotalSize() : "100%",
+              }}
+            >
+              <TableHeader>
+                {table.getHeaderGroups().map((hg) => (
+                  <TableRow key={hg.id} className="bg-muted/50 hover:bg-muted/50">
+                    {hg.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        style={{ width: header.getSize(), position: "relative" }}
+                        className="font-semibold text-foreground select-none"
+                        // Quitamos el doble clic para ocultar columnas
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
 
-                    {/* Handle de redimensionamiento */}
-                    {enableResizing && header.column.getCanResize() && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={[
-                          "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none",
-                          "bg-border hover:bg-primary/60 transition-colors",
-                          header.column.getIsResizing()
-                            ? "bg-primary opacity-100"
-                            : "opacity-0 hover:opacity-100",
-                        ].join(" ")}
-                      />
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={`sk-${i}`}>
-                    {columns.map((_, j) => (
-                      <TableCell key={j}>
-                        <Skeleton className="h-4 w-full" />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : table.getRowModel().rows.length === 0
-              ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="py-16 text-center text-muted-foreground">
-                    Sin resultados.
-                  </TableCell>
-                </TableRow>
-              )
-              : table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() ? "selected" : undefined}
-                    className={enableRowSelection ? "cursor-pointer" : undefined}
-                    onClick={enableRowSelection ? () => row.toggleSelected() : undefined}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+                        {/* Handle de redimensionamiento */}
+                        {enableResizing && header.column.getCanResize() && (
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className={[
+                              "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none",
+                              "bg-border hover:bg-primary/60 transition-colors",
+                              header.column.getIsResizing()
+                                ? "bg-primary opacity-100"
+                                : "opacity-0 hover:opacity-100",
+                            ].join(" ")}
+                          />
+                        )}
+                      </TableHead>
                     ))}
                   </TableRow>
                 ))}
-          </TableBody>
-        </Table>
+              </TableHeader>
+
+              <TableBody>
+                {loading
+                  ? Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={`sk-${i}`}>
+                        {columns.map((_, j) => (
+                          <TableCell key={j}>
+                            <Skeleton className="h-4 w-full" />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  : table.getRowModel().rows.length === 0
+                  ? (
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="py-16 text-center text-muted-foreground">
+                        Sin resultados.
+                      </TableCell>
+                    </TableRow>
+                  )
+                  : table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() ? "selected" : undefined}
+                        className={enableRowSelection ? "cursor-pointer" : undefined}
+                        onClick={enableRowSelection ? () => row.toggleSelected() : undefined}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id} style={{ width: cell.column.getSize() }}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
 
       {/* Paginación */}
@@ -379,7 +405,7 @@ export function DataTable<TData>({
         rowCount={data.length}
         onPageChange={(page) => onQueryChange({ page })}
         onPageSizeChange={(pageSize) => onQueryChange({ pageSize, page: 1 })}
-        onReset={() => onQueryChange({ page: 1, search: "" })}
+        onReset={handleReset}
       />
     </div>
   );

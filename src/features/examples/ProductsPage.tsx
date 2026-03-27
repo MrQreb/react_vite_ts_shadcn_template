@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Package, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DataTable,
   FilterTable,
@@ -9,6 +9,7 @@ import {
   BadgeBoolean,
   BadgeText,
   useDataTable,
+  useRowSelectionExport,
   type FilterType,
 } from "@/custom-components/DataTable";
 
@@ -146,7 +147,10 @@ const columns: ColumnDef<Product, any>[] = [
  * ```
  */
 export default function ProductsPage() {
-  const { queryParams, updateQueryParams } = useDataTable({ defaults: { pageSize: 5 } });
+  const { queryParams, updateQueryParams, resetQueryParams } = useDataTable({
+    defaults: { pageSize: 30 },
+    filterKeys: ["categoria"],
+  });
   const [categoria, setCategoria] = useState<string>((queryParams.categoria as string) ?? "");
   const [seleccionados, setSeleccionados] = useState<Product[]>([]);
 
@@ -158,9 +162,11 @@ export default function ProductsPage() {
     return matchSearch && matchCategoria;
   });
 
+  
   const totalPages = Math.max(1, Math.ceil(filtrados.length / queryParams.pageSize));
   const page = Math.min(queryParams.page, totalPages);
   const pageData = filtrados.slice((page - 1) * queryParams.pageSize, page * queryParams.pageSize);
+  const { getRowsForExport } = useRowSelectionExport(seleccionados, pageData);
   // ──────────────────────────────────────────────────────────────────────────
 
   const metricas = calcularMetricas(PRODUCTS);
@@ -176,15 +182,25 @@ export default function ProductsPage() {
     },
   ];
 
-  // Exporta solo las columnas visibles de los productos filtrados
-  const handleExportCSV: DataTableProps<Product>["onExportCSV"] = ({ visibleHeaders, getRowValues }) => {
-    const rows = filtrados.map(getRowValues);
-    const csv = [visibleHeaders, ...rows].map((r) => r.join(",")).join("\n");
+  // Exporta solo las columnas visibles priorizando filas seleccionadas
+  const handleExportCSV: DataTableProps<Product>["onExportCSV"] = ({
+    visibleHeaders,
+    getRowValues,
+    rowsForExport,
+  }) => {
+    const finalRows = (getRowsForExport(true).length ? getRowsForExport(true) : rowsForExport).map(getRowValues);
+    const csv = [visibleHeaders, ...finalRows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "productos.csv";
     a.click();
+  };
+
+  const handleResetAll = () => {
+    setCategoria("");
+    setSeleccionados([]);
+    resetQueryParams();
   };
 
   return (
@@ -261,13 +277,18 @@ export default function ProductsPage() {
               queryParams={{ ...queryParams, page }}
               onQueryChange={updateQueryParams}
               onExportCSV={handleExportCSV}
+              onResetAll={handleResetAll}
               enableRowSelection
               onRowSelectionChange={setSeleccionados}
               toolbar={
                 <FilterTable
                   filters={filtros}
-                  onApply={() => updateQueryParams({ categoria: categoria || undefined, page: 1 })}
-                  onClear={() => { setCategoria(""); updateQueryParams({ categoria: undefined, page: 1 }); }}
+                  onApply={(draft) => {
+                    const nextCategoria = (draft.find((f) => f.key === "categoria")?.value as string) ?? "";
+                    setCategoria(nextCategoria);
+                    updateQueryParams({ categoria: nextCategoria || undefined, page: 1 });
+                  }}
+                  onClear={handleResetAll}
                 />
               }
             />
