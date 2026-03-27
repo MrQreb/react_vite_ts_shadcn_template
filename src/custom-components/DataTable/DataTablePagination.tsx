@@ -82,7 +82,7 @@ export function DataTablePagination({
       {/* Información de registros */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-[11px] px-2 py-1">
+          <Badge variant="default" className="bg-gray-900 text-gray-400 text-[11px] px-2 py-1">
             {rowCount} {rowCount === 1 ? "fila" : "filas"}
           </Badge>
           <span className="text-xs">en esta página</span>
@@ -115,7 +115,7 @@ export function DataTablePagination({
           <SelectTrigger className="h-9 w-[140px] text-xs">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent align="end">
+          <SelectContent defaultValue={pageSize} align="end">
             {PAGE_SIZES.map((s) => (
               <SelectItem key={s} value={String(s)} className="text-xs">
                 {s} / página

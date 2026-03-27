@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { type Table } from "@tanstack/react-table";
 import { Search, Columns3, Download, Eye, EyeOff, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -61,6 +62,28 @@ export function DataTableToolbar<TData>({
   extraContent,
   onExportCSV,
 }: DataTableToolbarProps<TData>) {
+  const [inputValue, setInputValue] = useState(globalFilter ?? "");
+
+  // Mantiene el input sincronizado si el valor viene de afuera (ej. query params)
+  useEffect(() => {
+    setInputValue(globalFilter ?? "");
+  }, [globalFilter]);
+
+  const normalize = (value: string) =>
+    value
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+  // Debounce de 500ms antes de notificar al padre
+  useEffect(() => {
+    const id = setTimeout(() => {
+      onGlobalFilterChange(normalize(inputValue));
+    }, 500);
+    return () => clearTimeout(id);
+  }, [inputValue, onGlobalFilterChange]);
+
   // Columnas que el usuario puede mostrar/ocultar (excluye la de selección)
   const ocultables = table.getAllColumns().filter((c) => c.getCanHide());
 
@@ -73,14 +96,14 @@ export function DataTableToolbar<TData>({
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
-          value={globalFilter}
-          onChange={(e) => onGlobalFilterChange(e.target.value)}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder="Buscar..."
           className="pl-9 h-9"
         />
-        {globalFilter && (
+        {inputValue && (
           <button
-            onClick={() => onGlobalFilterChange("")}
+            onClick={() => setInputValue("")}
             className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Limpiar búsqueda"
           >
