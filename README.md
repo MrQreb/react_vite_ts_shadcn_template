@@ -13,7 +13,7 @@ Un cascaron completo para crear proyectos modernos con **React 19**, **TypeScrip
 
 | Librería | Versión | Descripción |
 |----------|---------|-------------|
-| **Shadcn** | Latest | Componentes UI basados en Tailwind |
+| **Shadcn** | 4.1 | Componentes UI basados en Tailwind |
 | **Tailwind CSS** | v4.22 | Framework de estilos utility-first |
 | **React** | v19 | Librería de UI |
 | **Zod** | v4 | Validación de esquemas TypeScript |

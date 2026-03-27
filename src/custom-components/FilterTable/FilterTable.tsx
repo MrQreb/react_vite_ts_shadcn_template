@@ -59,6 +59,8 @@ export function FilterTable({ filters, onApply, onClear, onClearSearch }: Filter
   const remove = useCallback(
     (key: string, type: FilterType["type"]) => {
       const emptyValue = EMPTY_VALUES[type];
+
+      //@ts-ignore
       setLocalFilters((previous) =>
         previous.map((filter) => (filter.key === key ? { ...filter, value: emptyValue } : filter))
       );

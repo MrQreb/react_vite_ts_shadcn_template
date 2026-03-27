@@ -110,6 +110,7 @@ export function useDataTable({
   const updateQueryParams = useCallback(
     (updates: Partial<QueryParams>) => {
       navigate({
+        //@ts-ignore
         search: (prev: Record<string, any>) => {
           const next = { ...prev, ...updates };
 
@@ -133,6 +134,7 @@ export function useDataTable({
    */
   const resetQueryParams = useCallback(() => {
     navigate({
+      //@ts-ignore
       search: () => {
         const next: Record<string, any> = {
           page: 1,
