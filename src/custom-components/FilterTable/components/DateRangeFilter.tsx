@@ -1,6 +1,6 @@
 /** Selector de rango de fechas para filtros. */
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -16,10 +16,11 @@ interface DateRangeFilterProps {
  * DatePicker para rangos con dos meses visibles.
  */
 export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
+  const parseLocal = (iso: string) => parse(iso, "yyyy-MM-dd", new Date());
+
   const label = value.start
-    ? `${format(new Date(value.start), "d MMM", { locale: es })} → ${
-        value.end ? format(new Date(value.end), "d MMM", { locale: es }) : "..."
-      }`
+    ? `${format(parseLocal(value.start), "d MMM", { locale: es })} → ${value.end ? format(parseLocal(value.end), "d MMM", { locale: es }) : "..."
+    }`
     : null;
 
   return (
@@ -41,9 +42,14 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
           locale={es}
           mode="range"
           numberOfMonths={2}
+          captionLayout="dropdown"
+          hidden={{
+            after: new Date(new Date().getFullYear() + 1, 11, 31),
+            before: new Date(2000, 0, 1),
+          }}
           selected={{
-            from: value.start ? new Date(value.start) : undefined,
-            to: value.end ? new Date(value.end) : undefined,
+            from: value.start ? parseLocal(value.start) : undefined,
+            to: value.end ? parseLocal(value.end) : undefined,
           }}
           onSelect={(range) =>
             onChange({
@@ -51,7 +57,7 @@ export function DateRangeFilter({ value, onChange }: DateRangeFilterProps) {
               end: range?.to ? format(range.to, "yyyy-MM-dd") : null,
             })
           }
-          initialFocus
+        // initialFocus
         />
       </PopoverContent>
     </Popover>

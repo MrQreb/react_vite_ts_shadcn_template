@@ -1,6 +1,6 @@
 /** Selector de fecha única para filtros. */
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { es } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -16,6 +16,8 @@ interface DateFilterProps {
  * DatePicker compacto para elegir una única fecha.
  */
 export function DateFilter({ value, onChange }: DateFilterProps) {
+  const parseLocal = (iso: string) => parse(iso, "yyyy-MM-dd", new Date());
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -26,7 +28,7 @@ export function DateFilter({ value, onChange }: DateFilterProps) {
             !value && "text-muted-foreground"
           )}
         >
-          {value ? format(new Date(value), "d MMM yyyy", { locale: es }) : "Seleccionar fecha"}
+          {value ? format(parseLocal(value), "d MMM yyyy", { locale: es }) : "Seleccionar fecha"}
           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -34,9 +36,15 @@ export function DateFilter({ value, onChange }: DateFilterProps) {
         <Calendar
           locale={es}
           mode="single"
-          selected={value ? new Date(value) : undefined}
+          captionLayout="dropdown"
+          hidden={{
+            after: new Date(new Date().getFullYear() + 1, 11, 31),
+            before: new Date(2000, 0, 1),
+          }}
+          // fromDate={new Date(2000, 0, 1)}
+          // toDate={new Date(new Date().getFullYear() + 1, 11, 31)}
+          selected={value ? parseLocal(value) : undefined}
           onSelect={(date) => onChange(date ? format(date, "yyyy-MM-dd") : null)}
-          initialFocus
         />
       </PopoverContent>
     </Popover>

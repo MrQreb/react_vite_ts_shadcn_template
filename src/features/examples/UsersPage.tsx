@@ -225,10 +225,14 @@ const columns: ColumnDef<User, any>[] = [
 export default function UsersPage() {
   const { queryParams, updateQueryParams, resetQueryParams } = useDataTable({
     defaults: { pageSize: 30 },
-    filterKeys: ["rol", "activo"],
+    filterKeys: ["rol", "activo", "startDate", "endDate"],
   });
   const [rol, setRol] = useState<string>((queryParams.rol as string) ?? "");
   const [activo, setActivo] = useState<string>((queryParams.activo as string) ?? "");
+  const [rangoFecha, setRangoFecha] = useState<{ start: string | null; end: string | null}>({
+    start: (queryParams.startDate as string) ?? null,
+    end: (queryParams.endDate as string) ?? null,
+  });
   const [seleccionados, setSeleccionados] = useState<User[]>([]);
 
   // ── Filtrado y paginación client-side ─────────────────────────────────────
@@ -239,7 +243,14 @@ export default function UsersPage() {
     const matchSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
     const matchRol = !queryParams.rol || u.role === queryParams.rol;
     const matchActivo = activoBool === undefined || u.active === activoBool;
-    return matchSearch && matchRol && matchActivo;
+    const matchFecha = (() => {
+      if (!queryParams.startDate && !queryParams.endDate) return true;
+      const d = new Date(u.createdAt);
+      if (queryParams.startDate && d < new Date(queryParams.startDate as string)) return false;
+      if (queryParams.endDate && d > new Date(queryParams.endDate as string)) return false;
+      return true;
+    })();
+    return matchSearch && matchRol && matchActivo && matchFecha;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtrados.length / queryParams.pageSize));
@@ -281,11 +292,17 @@ export default function UsersPage() {
       type: "select", key: "activo", label: "Estado",
       value: activo, options: ESTADO_OPTIONS, onChange: setActivo,
     },
+    {
+      type: "dateRange", key: "fecha", label: "Registro",
+      value: rangoFecha,
+      onChange: setRangoFecha,
+    },
   ];
 
   const handleResetAll = () => {
     setRol("");
     setActivo("");
+    setRangoFecha({ start: null, end: null });
     setSeleccionados([]);
     resetQueryParams();
   };
@@ -356,9 +373,17 @@ export default function UsersPage() {
                   onApply={(draft) => {
                     const nextRol = (draft.find((f) => f.key === "rol")?.value as string) ?? "";
                     const nextActivo = (draft.find((f) => f.key === "activo")?.value as string) ?? "";
+                    const nextFecha = (draft.find((f) => f.key === "fecha")?.value as { start: string | null; end: string | null }) ?? { start: null, end: null };
                     setRol(nextRol);
                     setActivo(nextActivo);
-                    updateQueryParams({ rol: nextRol || undefined, activo: nextActivo || undefined, page: 1 });
+                    setRangoFecha(nextFecha);
+                    updateQueryParams({
+                      rol: nextRol || undefined,
+                      activo: nextActivo || undefined,
+                      startDate: nextFecha.start || undefined,
+                      endDate: nextFecha.end || undefined,
+                      page: 1,
+                    });
                   }}
                   onClear={handleResetAll}
                 />
