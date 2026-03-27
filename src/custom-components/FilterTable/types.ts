@@ -49,4 +49,6 @@ export interface FilterTableProps {
   onApply: () => void;
   /** Se invoca al limpiar todos los filtros. */
   onClear: () => void;
+  /** Opcional: limpiar la búsqueda global del DataTable cuando se limpian filtros. */
+  onClearSearch?: () => void;
 }

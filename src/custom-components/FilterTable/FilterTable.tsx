@@ -15,7 +15,7 @@ import { FilterField } from "./components/FilterField";
 import { cloneFilters, EMPTY_VALUES, hasValue } from "./helpers";
 import type { FilterTableProps, FilterType } from "./types";
 
-export function FilterTable({ filters, onApply, onClear }: FilterTableProps) {
+export function FilterTable({ filters, onApply, onClear, onClearSearch }: FilterTableProps) {
   const [localFilters, setLocalFilters] = useState<FilterType[]>(() => cloneFilters(filters));
   const [open, setOpen] = useState(false);
 
@@ -48,7 +48,8 @@ export function FilterTable({ filters, onApply, onClear }: FilterTableProps) {
     setLocalFilters(reset);
     reset.forEach((filter) => filters.find((target) => target.key === filter.key)?.onChange(filter.value as any));
     onClear();
-  }, [localFilters, filters, onClear]);
+    onClearSearch?.();
+  }, [localFilters, filters, onClear, onClearSearch]);
 
   const remove = useCallback(
     (key: string, type: FilterType["type"]) => {

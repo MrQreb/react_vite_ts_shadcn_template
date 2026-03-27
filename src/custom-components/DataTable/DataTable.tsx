@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -61,7 +61,14 @@ export interface DataTableProps<TData> {
    * Recibe las filas seleccionadas (o todas si no hay selección) y los
    * encabezados de las columnas actualmente visibles.
    */
-  onExportCSV?: (params: { visibleHeaders: string[]; getRowValues: (row: TData) => string[] }) => void;
+  onExportCSV?: (params: {
+    /** Encabezados visibles de la tabla en el orden actual. */
+    visibleHeaders: string[];
+    /** Helper para obtener los valores de una fila según las columnas visibles. */
+    getRowValues: (row: TData) => string[];
+    /** Filas actualmente seleccionadas (vacío si no hay selección). */
+    selectedRows: TData[];
+  }) => void;
   /** Slot para contenido extra en la toolbar (ej. `<FilterTable />`) */
   toolbar?: React.ReactNode;
   /** Muestra skeletons en lugar de filas */
@@ -165,6 +172,11 @@ export function DataTable<TData>({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Mantener sincronizado el campo de búsqueda cuando cambian los query params externamente
+  useEffect(() => {
+    setGlobalFilter(queryParams.search ?? "");
+  }, [queryParams.search]);
+
   // Prepend columna de selección si está habilitada
   const columns = enableRowSelection
     ? [crearColumnaSeleccion<TData>(), ...columnsProp]
@@ -215,7 +227,6 @@ export function DataTable<TData>({
   const handleExportCSV = useCallback(() => {
     if (!onExportCSV) return;
 
-    // Columnas visibles (excluye la de selección)
     const visibleCols = table
       .getVisibleLeafColumns()
       .filter((c) => c.id !== "__seleccion__");
@@ -231,7 +242,9 @@ export function DataTable<TData>({
         return String(val ?? "");
       });
 
-    onExportCSV({ visibleHeaders, getRowValues });
+    const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original as TData);
+
+    onExportCSV({ visibleHeaders, getRowValues, selectedRows });
   }, [table, onExportCSV]);
 
   // ── Conteo de seleccionados ───────────────────────────────────────────────
