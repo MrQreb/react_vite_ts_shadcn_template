@@ -1,130 +1,159 @@
-import { useState } from "react";
-import { Search, Columns3, ChevronDown, Eye, EyeOff, Download } from "lucide-react";
-import type { ColumnDef, VisibilityState } from "@tanstack/react-table";
+import { type Table } from "@tanstack/react-table";
+import { Search, Columns3, Download, Eye, EyeOff, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface DataTableToolbarProps {
+// ─── Tipos ────────────────────────────────────────────────────────────────────
+
+interface DataTableToolbarProps<TData> {
+  /** Instancia de la tabla (contiene estado de columnas y métodos de visibilidad) */
+  table: Table<TData>;
+  /** Valor actual del campo de búsqueda global */
   globalFilter: string;
+  /** Callback al escribir en el campo de búsqueda */
   onGlobalFilterChange: (value: string) => void;
-  columns: ColumnDef<any, any>[];
-  columnVisibility: VisibilityState;
-  setColumnVisibility: (v: VisibilityState) => void;
+  /**
+   * Contenido extra entre la búsqueda y los botones.
+   * Usa este slot para colocar `<FilterTable />` u otros controles.
+   */
   extraContent?: React.ReactNode;
+  /** Muestra el botón CSV si se proporciona */
   onExportCSV?: () => void;
 }
 
-export function DataTableToolbar({
+// ─── Componente ───────────────────────────────────────────────────────────────
+
+/**
+ * Barra de herramientas de la tabla.
+ *
+ * Funcionalidades:
+ * - Búsqueda global con botón de limpiar
+ * - Slot para contenido extra (filtros, botones de acción)
+ * - Menú de visibilidad de columnas con conteo de ocultas
+ * - Botón de exportar CSV (solo columnas visibles)
+ *
+ * **Atajo de teclado:** doble clic en la cabecera de una columna la oculta.
+ * Recupera las columnas ocultas desde el menú "Columnas".
+ *
+ * @example
+ * ```tsx
+ * <DataTableToolbar
+ *   table={table}
+ *   globalFilter={busqueda}
+ *   onGlobalFilterChange={setBusqueda}
+ *   extraContent={<FilterTable filters={filtros} onApply={aplicar} onClear={limpiar} />}
+ *   onExportCSV={handleCSV}
+ * />
+ * ```
+ */
+export function DataTableToolbar<TData>({
+  table,
   globalFilter,
   onGlobalFilterChange,
-  columns,
-  columnVisibility,
-  setColumnVisibility,
   extraContent,
   onExportCSV,
-}: DataTableToolbarProps) {
-  const [colPopoverOpen, setColPopoverOpen] = useState(false);
+}: DataTableToolbarProps<TData>) {
+  // Columnas que el usuario puede mostrar/ocultar (excluye la de selección)
+  const ocultables = table.getAllColumns().filter((c) => c.getCanHide());
 
-  // Get columns that have an id or accessorKey to toggle
-  const toggleableColumns = columns
-    .filter((col) => (col as any).accessorKey || col.id)
-    .map((col) => ({
-      key: ((col as any).accessorKey ?? col.id) as string,
-      label: typeof col.header === "string" ? col.header : ((col as any).accessorKey ?? col.id),
-    }));
-
-  const toggle = (key: string) => {
-    setColumnVisibility({ ...columnVisibility, [key]: !(columnVisibility[key] ?? true) });
-  };
-
-  const visibleCount = toggleableColumns.filter((c) => columnVisibility[c.key] ?? true).length;
+  // Solo mostramos el conteo de ocultas si hay al menos una
+  const cantidadOcultas = ocultables.filter((c) => !c.getIsVisible()).length;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {/* Global search */}
+      {/* Búsqueda global */}
       <div className="relative flex-1 min-w-[200px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-        <input
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Input
           value={globalFilter}
           onChange={(e) => onGlobalFilterChange(e.target.value)}
           placeholder="Buscar..."
-          className="w-full pl-10 pr-4 h-9 rounded-md border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+          className="pl-9 h-9"
         />
-      </div>
-
-      {/* Extra toolbar slot (filters, buttons, etc.) */}
-      {extraContent}
-
-      {/* Column visibility */}
-      <div className="relative">
-        <button
-          onClick={() => setColPopoverOpen((o) => !o)}
-          className="flex items-center gap-2 h-9 px-3 rounded-md border border-gray-200 bg-white text-sm font-medium hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800"
-        >
-          <Columns3 className="h-4 w-4 text-gray-500" />
-          <span className="hidden sm:inline">Columnas</span>
-          {visibleCount < toggleableColumns.length && (
-            <span className="text-xs bg-blue-100 text-blue-700 px-1.5 rounded-full">
-              {visibleCount}/{toggleableColumns.length}
-            </span>
-          )}
-          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${colPopoverOpen ? "rotate-180" : ""}`} />
-        </button>
-
-        {colPopoverOpen && (
-          <>
-            <div className="fixed inset-0 z-10" onClick={() => setColPopoverOpen(false)} />
-            <div className="absolute right-0 top-full mt-2 z-20 w-56 rounded-xl border border-gray-200 bg-white shadow-xl dark:bg-gray-900 dark:border-gray-700 overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 dark:border-gray-800">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Columnas visibles</span>
-                <div className="flex gap-1">
-                  <button
-                    onClick={() => setColumnVisibility(Object.fromEntries(toggleableColumns.map((c) => [c.key, true])))}
-                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                    title="Mostrar todas"
-                  >
-                    <Eye className="h-3.5 w-3.5 text-gray-400" />
-                  </button>
-                  <button
-                    onClick={() => setColumnVisibility(Object.fromEntries(toggleableColumns.map((c) => [c.key, false])))}
-                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                    title="Ocultar todas"
-                  >
-                    <EyeOff className="h-3.5 w-3.5 text-gray-400" />
-                  </button>
-                </div>
-              </div>
-              <div className="py-1 max-h-60 overflow-y-auto">
-                {toggleableColumns.map((col) => {
-                  const isVisible = columnVisibility[col.key] ?? true;
-                  return (
-                    <label
-                      key={col.key}
-                      className="flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 select-none"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isVisible}
-                        onChange={() => toggle(col.key)}
-                        className="rounded"
-                      />
-                      <span className="text-sm">{String(col.label)}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          </>
+        {globalFilter && (
+          <button
+            onClick={() => onGlobalFilterChange("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Limpiar búsqueda"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         )}
       </div>
 
-      {/* Export CSV */}
+      {/* Slot para contenido extra */}
+      {extraContent}
+
+      {/* Menú de visibilidad de columnas */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="h-9 gap-2">
+            <Columns3 className="h-4 w-4" />
+            <span className="hidden sm:inline">Columnas</span>
+            {/* Solo muestra el conteo si hay columnas ocultas */}
+            {cantidadOcultas > 0 && (
+              <span className="inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold">
+                -{cantidadOcultas}
+              </span>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuLabel className="flex items-center justify-between py-2">
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+              Columnas visibles
+            </span>
+            <div className="flex gap-1">
+              {/* Mostrar todas */}
+              <button
+                onClick={() => ocultables.forEach((c) => c.toggleVisibility(true))}
+                className="p-1 rounded hover:bg-accent transition-colors"
+                title="Mostrar todas"
+              >
+                <Eye className="h-3 w-3 text-muted-foreground" />
+              </button>
+              {/* Ocultar todas */}
+              <button
+                onClick={() => ocultables.forEach((c) => c.toggleVisibility(false))}
+                className="p-1 rounded hover:bg-accent transition-colors"
+                title="Ocultar todas"
+              >
+                <EyeOff className="h-3 w-3 text-muted-foreground" />
+              </button>
+            </div>
+          </DropdownMenuLabel>
+
+          <DropdownMenuSeparator />
+
+          {ocultables.map((column) => (
+            <DropdownMenuCheckboxItem
+              key={column.id}
+              checked={column.getIsVisible()}
+              onCheckedChange={(v) => column.toggleVisibility(v)}
+              className="capitalize"
+            >
+              {/* Usa meta.label si está definido, sino el id de la columna */}
+              {(column.columnDef.meta as any)?.label ?? column.id}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Exportar CSV (solo columnas visibles) */}
       {onExportCSV && (
-        <button
-          onClick={onExportCSV}
-          className="flex items-center gap-2 h-9 px-3 rounded-md border border-gray-200 bg-white text-sm font-medium hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800"
-        >
-          <Download className="h-4 w-4 text-gray-500" />
+        <Button variant="outline" size="sm" onClick={onExportCSV} className="h-9 gap-2">
+          <Download className="h-4 w-4" />
           <span className="hidden sm:inline">CSV</span>
-        </button>
+        </Button>
       )}
     </div>
   );
