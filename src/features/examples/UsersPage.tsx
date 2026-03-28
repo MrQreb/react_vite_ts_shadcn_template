@@ -4,17 +4,7 @@ import { Users, UserCheck, UserX, ShieldCheck, Trash2, Mail } from "lucide-react
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DataTable,
-  FilterTable,
-  SortableHeader,
-  BadgeBoolean,
-  BadgeText,
-  useDataTable,
-  parseBooleanParam,
-  useCsvExport,
-  type FilterType,
-} from "@/custom-components/DataTable";
+import { BadgeBoolean, BadgeText, DataTable, FilterTable, parseBooleanParam, SortableHeader, useCsvExport, useDataTable, type FilterType } from "@/components/custom/DataTable";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 

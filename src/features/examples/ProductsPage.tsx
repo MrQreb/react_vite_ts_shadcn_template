@@ -2,16 +2,8 @@ import { useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Package, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DataTable,
-  FilterTable,
-  SortableHeader,
-  BadgeBoolean,
-  BadgeText,
-  useDataTable,
-  useCsvExport,
-  type FilterType,
-} from "@/custom-components/DataTable";
+import { BadgeBoolean, BadgeText, DataTable, FilterTable, SortableHeader, useCsvExport, useDataTable, type FilterType } from "@/components/custom/DataTable";
+
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
