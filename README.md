@@ -17,7 +17,7 @@ Un cascaron completo para crear proyectos modernos con **React 19**, **TypeScrip
 | **Tailwind CSS** | v4.22 | Framework de estilos utility-first |
 | **React** | v19 | Librería de UI |
 | **Zod** | v4 | Validación de esquemas TypeScript |
-| **React Hook Form** | v7.2 | Gestión de formularios |
+| **Tanstack Form** | v1.2 | Gestión de formularios |
 | **TanStack Query** | v5.95 | Fetching y caching de datos |
 | **TanStack Router** | v1.16 | Enrutamiento moderno |
 | **Zustand** | v5.0 | Gestión de estado global |
@@ -108,14 +108,29 @@ export default defineConfig([
 
 ## Estructura del Proyecto
 
+Árbol simplificado (una sola app). El detalle completo está en [documentation/estructura-directorio.md](documentation/estructura-directorio.md).
+
 ```
-src/
-├── components/     # Componentes reutilizables
-├── pages/         # Páginas de la aplicación
-├── hooks/         # Custom hooks
-├── store/         # Estado global (Zustand)
-├── api/           # Configuración de queries (TanStack Query)
-├── lib/           # Utilidades y helpers
-└── App.tsx        # Componente raíz
+root
+├─ public/
+├─ src/
+│  ├─ app/
+│  │  ├─ App.tsx
+│  │  ├─ providers/            # Query, Theme, Auth
+│  │  ├─ router/               # TanStack Router (__root, routeTree, router)
+│  │  └─ layouts/              # NotFound y layouts globales
+│  ├─ assets/
+│  ├─ components/
+│  │  ├─ custom/               # DataTable, FilterTable y hooks asociados
+│  │  └─ ui/                   # Componentes shadcn (sin lógica)
+│  ├─ examples/                # Páginas de ejemplo (UsersPage, ProductsPage)
+│  ├─ features/
+│  │  └─ auth/                 # Dominio Auth (routes, login)
+│  ├─ lib/                     # Utilidades puras (ej. utils.ts)
+│  ├─ styles/                  # Tailwind/global CSS
+│  ├─ index.css
+│  └─ main.tsx
+├─ documentation/              # Documentación interna
+└─ vite.config.ts
 ```
 
