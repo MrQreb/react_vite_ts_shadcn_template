@@ -1,5 +1,4 @@
 import { Bot, Sparkles } from "lucide-react";
-
 /**
  * Componente visual de como muestra el header del contenedor del chatbot
  * @returns Tsx component

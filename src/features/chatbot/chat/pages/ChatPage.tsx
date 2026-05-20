@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input";
 import { motion } from 'motion/react';
 import { MESSAGES } from "../data/MESSAGES";
 import { Separator } from '@/components/ui/separator';
-import { ArrowUp, SendHorizonal } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { Header, Messages } from "../components";
 import { chatInputAnimation, sendButtonAnimation } from "../animations";
-import { email } from "zod";
+import { facturacionService } from "../../api/instances/facturacion.instances";
 
-/** Componente de la pagina del chat */
+/** Pagina encargada del chatbot.
+* @returns Tsx component
+*/
 export const ChatPage = () => {
     const MotionButton = motion.create(Button);
     const MotionInput = motion.create(Input);
@@ -18,12 +20,13 @@ export const ChatPage = () => {
     //Referencia del formulario
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
+    // let [response, setResponse] = useState(undefined);
     let [inputText, setInputText] = useState("");
     let [messages, setMessages] = useState(MESSAGES);
-    const emptyTextInput:boolean = inputText.length === 0;
+    const emptyTextInput: boolean = inputText.length === 0;
 
 
-    const addNewMessage = (value: string) => {
+    const addNewMessage = async (value: string) => {
 
         const newMessage = {
             id: messages.length + 1,
@@ -35,17 +38,26 @@ export const ChatPage = () => {
             }),
         };
 
+        
+
+        const data = await facturacionService.chat({
+            message:value
+        });
+
         const botMessage = {
             id: messages.length + 1,
             role: "assistant",
-            content: "Hola carnal",
+            content: data?.answer,
             time: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
             }),
         };
+        
+        console.log(data)
+        console.log(data?.answer)
 
-        //agregar mensaje
+        //agregar mensaje y conserva anteriores
         setMessages((prev) => [...prev, newMessage, botMessage]);
 
     }
@@ -58,8 +70,8 @@ export const ChatPage = () => {
     }
 
     /** Maneja el evento cuando preciona tecla y lanza el evento click */
-    const handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>):void => {
-        if(e.key === 'Enter'){
+    const handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+        if (e.key === 'Enter') {
             handleOnClick();
         }
         return;
@@ -91,9 +103,9 @@ export const ChatPage = () => {
 
                 {/* Input de mensaje usuario */}
                 <div className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-                    
+
                     <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
-                        
+
                         <div className="flex items-center gap-3">
                             <MotionInput
                                 {...chatInputAnimation(!!inputText)}

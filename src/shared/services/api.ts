@@ -1,7 +1,5 @@
 // shared/services/api.ts
 
-const apiUrl = 'url';
-
 /**
  * Función base para realizar peticiones HTTP a la API.
  * 
@@ -40,7 +38,7 @@ export const api = async <T>(
 
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${apiUrl}${endpoint}`, {
+  const res = await fetch(`${endpoint}`, {
     ...options,
     headers: {
       ...(options.body instanceof FormData
