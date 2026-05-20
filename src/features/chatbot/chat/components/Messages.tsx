@@ -19,8 +19,8 @@ export const Messages = ({ messages, bottomRef}:Props) => {
     return (
         <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-                <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-8 md:px-6">
-
+                
+                <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-8 md:px-6">
                     <AnimatePresence>
                         {messages.map((message) => {
                             const isUser = message.role === "user";

@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { motion } from 'motion/react';
 import { MESSAGES } from "../data/MESSAGES";
 import { Separator } from '@/components/ui/separator';
-import { SendHorizonal } from "lucide-react";
+import { ArrowUp, SendHorizonal } from "lucide-react";
 import { Header, Messages } from "../components";
 import { chatInputAnimation, sendButtonAnimation } from "../animations";
+import { email } from "zod";
 
 /** Componente de la pagina del chat */
 export const ChatPage = () => {
@@ -19,6 +20,7 @@ export const ChatPage = () => {
 
     let [inputText, setInputText] = useState("");
     let [messages, setMessages] = useState(MESSAGES);
+    const emptyTextInput:boolean = inputText.length === 0;
 
 
     const addNewMessage = (value: string) => {
@@ -48,10 +50,19 @@ export const ChatPage = () => {
 
     }
 
+    /** Mandeja el evento de enviar mensaje */
     const handleOnClick = (): void => {
         if (!inputText.trim()) return;
         addNewMessage(inputText);
         setInputText("");
+    }
+
+    /** Maneja el evento cuando preciona tecla y lanza el evento click */
+    const handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>):void => {
+        if(e.key === 'Enter'){
+            handleOnClick();
+        }
+        return;
     }
 
     /** Manda hazta el final de los mensajes */
@@ -80,25 +91,29 @@ export const ChatPage = () => {
 
                 {/* Input de mensaje usuario */}
                 <div className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                    
                     <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
+                        
                         <div className="flex items-center gap-3">
                             <MotionInput
                                 {...chatInputAnimation(!!inputText)}
                                 value={inputText}
                                 onChange={(e) => setInputText(e.target.value)}
+                                onKeyDown={handlePressEnter}
                                 placeholder="Escribe un mensaje..."
-                                className="h-14 rounded-2xl border bg-muted/40 px-5 text-sm shadow-sm"
+                                className={`h-14 rounded-2xl border px-5 text-sm shadow-sm`}
                             />
 
                             <MotionButton
                                 {...sendButtonAnimation}
                                 size="icon"
+                                disabled={emptyTextInput}
                                 className="size-14 rounded-2xl shadow-md"
                                 onClick={
                                     handleOnClick
                                 }
                             >
-                                <SendHorizonal className="size-5" />
+                                <ArrowUp className="size-5" />
                             </MotionButton>
                         </div>
 
