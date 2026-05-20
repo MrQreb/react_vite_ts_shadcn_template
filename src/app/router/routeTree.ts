@@ -1,6 +1,7 @@
 import { loginRoute } from "@/features/auth/routes/routes";
 import { rootRoute } from "./__root";
 import { usuariosRoutes } from "@/features/usuarios/routes/routes";
+import { chatRoutes } from "@/features/chatbot/routes/routes";
 
 
 /**
@@ -9,4 +10,6 @@ import { usuariosRoutes } from "@/features/usuarios/routes/routes";
 export const routeTree = rootRoute.addChildren([
   loginRoute,
   usuariosRoutes,
+  chatRoutes
+
 ])

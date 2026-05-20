@@ -1,6 +1,6 @@
-# React + TypeScript + Vite - Project Template
+# Chat bot Marbran
 
-Un cascaron completo para crear proyectos modernos con **React 19**, **TypeScript**, **Vite** y un conjunto de librerías profesionales.
+Proyecto creado con React,Typescript y como bundler **Vite**. Consume API rest.
 
 ##  Características
 
