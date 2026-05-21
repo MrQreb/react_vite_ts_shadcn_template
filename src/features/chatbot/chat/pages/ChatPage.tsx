@@ -1,65 +1,87 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { motion } from 'motion/react';
 import { MESSAGES } from "../data/MESSAGES";
 import { Separator } from '@/components/ui/separator';
-import { ArrowUp } from "lucide-react";
-import { Header, Messages } from "../components";
-import { chatInputAnimation, sendButtonAnimation } from "../animations";
+import { ChatInput, Header, Messages } from "../components";
 import { facturacionService } from "../../api/instances/facturacion.instances";
+import type { IMessage, MessageRole } from "../interfaces/Imessage";
+import { useMutation } from "@tanstack/react-query";
 
 /** Pagina encargada del chatbot.
 * @returns Tsx component
 */
 export const ChatPage = () => {
-    const MotionButton = motion.create(Button);
-    const MotionInput = motion.create(Input);
-
-    //Referencia del formulario
-    const bottomRef = useRef<HTMLDivElement | null>(null);
-
-    // let [response, setResponse] = useState(undefined);
     let [inputText, setInputText] = useState("");
     let [messages, setMessages] = useState(MESSAGES);
     const emptyTextInput: boolean = inputText.length === 0;
 
+    /** Permite generar el mensaje en base al texto y el rol
+     * @param value - string
+     * @param role - MessageRole
+     */
+    const createMessage = (
+        value: string,
+        role: MessageRole
+    ): IMessage => {
 
-    const addNewMessage = async (value: string) => {
-
-        const newMessage = {
-            id: messages.length + 1,
-            role: "user",
-            content: value,
-            time: new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-            }),
-        };
-
-        
-
-        const data = await facturacionService.chat({
-            message:value
+        const time = new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
         });
 
-        const botMessage = {
-            id: messages.length + 1,
-            role: "assistant",
-            content: data?.answer,
-            time: new Date().toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-            }),
+        return {
+            id: Date.now() + Math.floor(Math.random() * 1000),
+            content: value,
+            role,
+            time
         };
-        
-        console.log(data)
-        console.log(data?.answer)
+    };
 
-        //agregar mensaje y conserva anteriores
-        setMessages((prev) => [...prev, newMessage, botMessage]);
+    const { mutate, isPending, isError } = useMutation({
+        mutationFn: async (value: string) => {
+            return facturacionService.chat({
+                message: value
+            });
+        },
+        onSuccess: (data) => {
 
+            const botMessage = createMessage(
+                data?.answer,
+                'assistant'
+            );
+
+            setMessages((prev) => [
+                ...prev,
+                botMessage
+            ]);
+        },
+        onError: () => {
+            const errorMessage = createMessage(
+                "Ocurrió un error al procesar el mensaje. Contacte al desarrollador",
+                "assistant"
+            );
+            setMessages((prev) => [
+                ...prev,
+                errorMessage
+            ]);
+        }
+    });
+
+    /** Anade el mensaje, renderiza y ejecuta la mutacion */
+    const addNewMessage = (value: string) => {
+        const userMessage = createMessage(
+            value,
+            'user'
+        );
+
+        //Mandar mensaje del usuario
+        setMessages((prev) => [
+            ...prev,
+            userMessage
+        ]);
+
+        // Ejecuta mutation
+        mutate(value);
     }
 
     /** Mandeja el evento de enviar mensaje */
@@ -69,72 +91,29 @@ export const ChatPage = () => {
         setInputText("");
     }
 
-    /** Maneja el evento cuando preciona tecla y lanza el evento click */
-    const handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
-        if (e.key === 'Enter') {
-            handleOnClick();
-        }
-        return;
-    }
-
-    /** Manda hazta el final de los mensajes */
-    useEffect(() => {
-        bottomRef.current?.scrollIntoView({
-            behavior: 'smooth'
-        });
-
-    }, [messages])
-
-
-
     return (
         //Contenedor del chat
         <div className="h-screen bg-background p-4 md:p-6">
 
             <Card className="mx-auto flex h-full max-w-9xl flex-col overflow-hidden rounded-3xl border bg-background shadow-2xl">
 
-                {/* Header */}
+                {/* Header donde muestro la parte de tarjetia del cahtbo*/}
                 <Header />
 
-                {/* Scroll mensajes */}
-                <Messages bottomRef={bottomRef} messages={messages} />
+                {/* Contenedor de mensajes */}
+                <Messages isPending={isPending} messages={messages} />
+
 
                 <Separator />
 
                 {/* Input de mensaje usuario */}
-                <div className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                <ChatInput
+                    value={inputText}
+                    onChange={setInputText}
+                    onSubmit={handleOnClick}
+                    disabled={emptyTextInput || isPending}
+                />
 
-                    <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
-
-                        <div className="flex items-center gap-3">
-                            <MotionInput
-                                {...chatInputAnimation(!!inputText)}
-                                value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                                onKeyDown={handlePressEnter}
-                                placeholder="Escribe un mensaje..."
-                                className={`h-14 rounded-2xl border px-5 text-sm shadow-sm`}
-                            />
-
-                            <MotionButton
-                                {...sendButtonAnimation}
-                                size="icon"
-                                disabled={emptyTextInput}
-                                className="size-14 rounded-2xl shadow-md"
-                                onClick={
-                                    handleOnClick
-                                }
-                            >
-                                <ArrowUp className="size-5" />
-                            </MotionButton>
-                        </div>
-
-                        <p className="mt-3 text-center text-md text-muted-foreground font-semibold">
-                            El asistente puede cometer errores. Verifica la información
-                            importante.
-                        </p>
-                    </div>
-                </div>
             </Card>
         </div>
     );

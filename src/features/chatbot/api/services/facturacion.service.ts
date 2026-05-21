@@ -22,10 +22,6 @@ export class FacturacionService {
       body: JSON.stringify(data),
       method: "POST",
     });
-
-    console.log(response);
-
     return response;
-    
   };
 }

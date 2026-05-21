@@ -1,4 +1,4 @@
-import type { MotionProps } from "motion/react";
+import type { MotionProps } from "framer-motion";
 
 /** Animacion de aparicion de los mensajes */
 export const chatMessageAnimation: MotionProps = {

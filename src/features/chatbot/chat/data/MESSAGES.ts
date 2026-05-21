@@ -1,8 +1,8 @@
-import type { IMesssages } from "../interfaces/Imessage";
+import type { IMessage } from "../interfaces/Imessage";
 /**
  * Arreglo de los mensajes maquetado
  */
-export const MESSAGES: IMesssages[] = [
+export const MESSAGES: IMessage[] = [
   {
     id: 1,
     role: "assistant",
@@ -55,16 +55,16 @@ export const MESSAGES: IMesssages[] = [
     content:
       "Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.Perfecto. Ya preparé el archivo Excel con el detalle de las facturas vencidas y sus clientes asociados.",
     time: "10:05 AM",
-  },
+  }
 
   // mensajes extra para probar scroll
-  ...Array.from({ length: 15 }).map((_, index) => ({
-    id: index + 9,
-    role: index % 2 === 0 ? "assistant" : "user",
-    content:
-      index % 2 === 0
-        ? "Este es un mensaje de respuesta del asistente mostrando cómo se comporta el scroll dentro del chat."
-        : "Mensaje del usuario para probar el comportamiento del scroll y el input fijo.",
-    time: "10:06 AM",
-  })),
+  // ...Array.from({ length: 15 }).map((_, index) => ({
+  //   id: index + 9,
+  //   role: index % 2 === 0 ? "assistant" : "user",
+  //   content:
+  //     index % 2 === 0
+  //       ? "Este es un mensaje de respuesta del asistente mostrando cómo se comporta el scroll dentro del chat."
+  //       : "Mensaje del usuario para probar el comportamiento del scroll y el input fijo.",
+  //   time: "10:06 AM",
+  // })),
 ];

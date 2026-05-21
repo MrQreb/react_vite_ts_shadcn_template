@@ -1,9 +1,13 @@
 
+/** Clasificacion de quien viene el mensaje */
+export type MessageRole = "user" | "assistant";
+
+
 /** Interfaz de reglas del mensaje */
-export interface IMesssages {
+export interface IMessage {
     /** Id generado */
     id: number;
-    role: string;
+    role: MessageRole;
     /** Contenido del mensaje */
     content: string;
     /** Fecha de creacion */

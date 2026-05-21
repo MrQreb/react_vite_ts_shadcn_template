@@ -1,34 +1,47 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { AnimatePresence, motion } from 'motion/react';
-import type { IMesssages } from '../interfaces/Imessage';
+import { AnimatePresence, motion } from "framer-motion";
+import type { IMessage } from '../interfaces/Imessage';
 import { chatMessageAnimation } from '../animations/chatMessageAnimation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bot, FileSpreadsheet, User } from 'lucide-react';
+import { LoadingMessage } from './LoadingMessage';
+import { useEffect, useRef } from 'react';
 
-interface Props{
+interface Props {
     /** Arreglo de objetos de los mensajes */
-    messages:IMesssages[];
-    /** Referencia del contenedor donde terminan los mensajes */
-    bottomRef:React.RefObject<HTMLDivElement | null>;
+    messages: IMessage[];
+    /**Permite saber si esta pendiente el mensaje generado por LLM */
+    isPending: boolean;
 }
 
 /** Contenedor de los mensajes del chat
  * @returns Tsx
  */
-export const Messages = ({ messages, bottomRef}:Props) => {
+export const Messages = ({ messages, isPending }: Props) => {
+
+    const bottomRef = useRef<HTMLDivElement | null>(null);
+
+    /** Manda hazta el final de los mensajes */
+    useEffect(() => {
+        bottomRef.current?.scrollIntoView({
+            behavior: 'smooth'
+        });
+    }, [messages])
+
     return (
         <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-                
+
                 <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-8 md:px-6">
                     <AnimatePresence>
+
                         {messages.map((message) => {
                             const isUser = message.role === "user";
 
                             return (
                                 <motion.div
                                     key={message.id}
-                                    {...chatMessageAnimation} //Animacion del mensaje cuando aparece
+                                    {...chatMessageAnimation}
                                     className={`flex items-end gap-3 ${isUser ? "justify-end" : "justify-start"
                                         }`}
                                 >
@@ -65,13 +78,20 @@ export const Messages = ({ messages, bottomRef}:Props) => {
                                             </AvatarFallback>
                                         </Avatar>
                                     )}
+
+
+
                                 </motion.div>
                             );
                         })}
+
+                        {/* Muestra animacion de cuando procesa el mensaje el LLM */}
+                        {isPending && <LoadingMessage />}
+
                     </AnimatePresence>
 
                     {/* Ejemplo de archivo generado con hover */}
-                    <div className="flex items-start gap-3 hover:cursor-pointer">
+                    {/* <section className="flex items-start gap-3 hover:cursor-pointer">
                         <Avatar className="size-10 border shadow-sm">
                             <AvatarFallback className="bg-primary text-primary-foreground">
                                 <Bot size={18} />
@@ -95,14 +115,14 @@ export const Messages = ({ messages, bottomRef}:Props) => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    {/* Fin de mensajes */}
-                    {/* espacio inferior */}
+                    </section> */}
+
+
+                    {/* Fin del conenedor de los mensajes */}
                     <div className="h-4" ref={bottomRef} />
                 </div>
             </ScrollArea>
         </div>
-  )
+    )
 }
 

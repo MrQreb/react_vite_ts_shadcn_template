@@ -1,7 +1,6 @@
-import type { MotionProps } from "motion/react";
+import type { MotionProps } from "framer-motion";
 
 /** Animacion de boton de envio */
-
 export const chatInputAnimation = (
     hasText: boolean
 ): MotionProps => ({
