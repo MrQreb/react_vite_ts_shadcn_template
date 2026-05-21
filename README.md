@@ -22,6 +22,7 @@ Proyecto creado con React,Typescript y como bundler **Vite**. Consume API rest.
 | **TanStack Router** | v1.16 | Enrutamiento moderno |
 | **Zustand** | v5.0 | Gestión de estado global |
 | **TanStack Table** | v8.0 | Componentes de tablas avanzadas |
+| **Streamdown** | v8.0 | Renderizado de markdown |
 
 ## Iniciar proyecto
 
