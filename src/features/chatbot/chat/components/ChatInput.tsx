@@ -3,12 +3,8 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 import { useRef } from 'react';
-
-import {
-    chatInputAnimation,
-    sendButtonAnimation
-} from '../animations';
-
+import { chatInputAnimation, sendButtonAnimation } from '../animations';
+import { ToolsDropdown } from './ToolsDropdown';
 
 interface Props {
     /**
@@ -31,7 +27,7 @@ interface Props {
 }
 
 /**
- * Componente encargado de renderizar el input del chat.
+ * Componente encargado de renderizar el input del chat. Desde el boton ,TextArea y ToolsDropdown
  * @returns Tsx component
  */
 export const ChatInput = ({
@@ -84,11 +80,16 @@ export const ChatInput = ({
     };
 
     return (
-        <div className="sticky bottom-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="sticky bottom-0 bg-background/95 backdrop-blur">
 
             <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
 
                 <div className="flex items-center gap-3">
+                    
+                    {/* Dropdown */}
+                    <ToolsDropdown />
+
+                    {/* TextArea */}
                     <MotionTextarea
                         ref={textareaRef}
                         {...chatInputAnimation(!!value)}
@@ -110,6 +111,7 @@ export const ChatInput = ({
                         "
                     />
 
+                    {/* Button */}
                     <MotionButton
                         {...sendButtonAnimation}
                         size="icon"

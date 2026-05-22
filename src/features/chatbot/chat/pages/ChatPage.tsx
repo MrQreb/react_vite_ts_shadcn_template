@@ -6,14 +6,16 @@ import { ChatInput, Header, Messages } from "../components";
 import { facturacionService } from "../../api/instances/facturacion.instances";
 import type { IMessage, MessageRole } from "../interfaces/Imessage";
 import { useMutation } from "@tanstack/react-query";
+import { useChatInputStore } from "../store/chatInput.store";
 
 /** Pagina encargada del chatbot.
 * @returns Tsx component
 */
 export const ChatPage = () => {
-    let [inputText, setInputText] = useState("");
+    // let [inputText, setInputText] = useState("");
+    const { text, setText } = useChatInputStore();
     let [messages, setMessages] = useState(MESSAGES);
-    const emptyTextInput: boolean = inputText.length === 0;
+    const emptyTextInput: boolean = text.length === 0;
 
     /** Permite generar el mensaje en base al texto y el rol
      * @param value - string
@@ -57,7 +59,7 @@ export const ChatPage = () => {
         },
         onError: () => {
             const errorMessage = createMessage(
-                "Ocurrió un error al procesar el mensaje. Contacte al desarrollador",
+                "Ocurrió un error al procesar el mensaje.",
                 "assistant"
             );
             setMessages((prev) => [
@@ -67,7 +69,7 @@ export const ChatPage = () => {
         }
     });
 
-    /** Anade el mensaje, renderiza y ejecuta la mutacion */
+    /** Añade el mensaje el mensaje, renderiza y ejecuta la mutacion */
     const addNewMessage = (value: string) => {
         const userMessage = createMessage(
             value,
@@ -86,9 +88,9 @@ export const ChatPage = () => {
 
     /** Mandeja el evento de enviar mensaje */
     const handleOnClick = (): void => {
-        if (!inputText.trim()) return;
-        addNewMessage(inputText);
-        setInputText("");
+        if (!text.trim()) return;
+        addNewMessage(text);
+        setText("");
     }
 
     return (
@@ -108,8 +110,8 @@ export const ChatPage = () => {
 
                 {/* Input de mensaje usuario */}
                 <ChatInput
-                    value={inputText}
-                    onChange={setInputText}
+                    value={text}
+                    onChange={setText}
                     onSubmit={handleOnClick}
                     disabled={emptyTextInput || isPending}
                 />
