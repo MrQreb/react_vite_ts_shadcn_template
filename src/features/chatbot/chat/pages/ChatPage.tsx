@@ -7,13 +7,17 @@ import { facturacionService } from "../../api/instances/facturacion.instances";
 import type { IMessage, MessageRole } from "../interfaces/Imessage";
 import { useMutation } from "@tanstack/react-query";
 import { useChatInputStore } from "../store/chatInput.store";
+import { useGeminiModel } from "../store/geminiModel.store";
 
 /** Pagina encargada del chatbot.
 * @returns Tsx component
 */
 export const ChatPage = () => {
-    // let [inputText, setInputText] = useState("");
+    
+    //Estados globales
     const { text, setText } = useChatInputStore();
+    const { model } = useGeminiModel();
+
     let [messages, setMessages] = useState(MESSAGES);
     const emptyTextInput: boolean = text.length === 0;
 
@@ -42,7 +46,8 @@ export const ChatPage = () => {
     const { mutate, isPending, isError } = useMutation({
         mutationFn: async (value: string) => {
             return facturacionService.chat({
-                message: value
+                message: value,
+                modelGemini:model.id
             });
         },
         onSuccess: (data) => {

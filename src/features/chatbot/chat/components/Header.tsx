@@ -1,4 +1,6 @@
-import { Bot, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Bot, DollarSign } from "lucide-react";
+import { GeminiModelDropdown } from './GeminiModelDropdown';
 /**
  * Componente visual de como muestra el header del contenedor del chatbot
  * @returns Tsx component
@@ -7,27 +9,39 @@ export const Header = () => {
     return (
         <div className="border-b bg-background/80 px-6 py-4 backdrop-blur">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+
+
+                <section className="flex items-center gap-4">
+                   
                     <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10">
                         <Bot className="size-6 text-primary" />
                     </div>
 
-                    <div>
+                    <section>
                         <h1 className="text-lg font-semibold tracking-tight">
                             Chat Facturación
                         </h1>
 
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Sparkles className="size-4" />
-                            <span>Asistente financiero inteligente</span>
+                            <Badge>
+                                <DollarSign />
+                                <span>Asistente de facturación</span>
+                            </Badge>
                         </div>
-                    </div>
-                </div>
+                    </section>
 
-                <div className="hidden md:flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-sm text-muted-foreground">
+                </section>
+
+                <div>
+                    <GeminiModelDropdown />
+
+                </div>
+                {/* <div className="hidden md:flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-sm text-muted-foreground">
                     <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                     En línea
-                </div>
+
+                </div> */}
+
             </div>
         </div>
     )
