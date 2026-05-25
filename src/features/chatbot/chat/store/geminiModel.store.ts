@@ -1,5 +1,3 @@
-// stores/chatInputStore.ts
-
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -88,9 +86,7 @@ export const useGeminiModel =
                     set({
                         model,
                     }),
-
             }),
-
             {
                 name: "chat-input-store",
             }

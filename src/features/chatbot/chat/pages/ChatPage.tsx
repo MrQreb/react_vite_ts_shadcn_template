@@ -8,12 +8,13 @@ import type { IMessage, MessageRole } from "../interfaces/Imessage";
 import { useMutation } from "@tanstack/react-query";
 import { useChatInputStore } from "../store/chatInput.store";
 import { useGeminiModel } from "../store/geminiModel.store";
+import type { ChatFileResponse } from "../../api/dto";
 
 /** Pagina encargada del chatbot.
 * @returns Tsx component
 */
 export const ChatPage = () => {
-    
+
     //Estados globales
     const { text, setText } = useChatInputStore();
     const { model } = useGeminiModel();
@@ -27,7 +28,9 @@ export const ChatPage = () => {
      */
     const createMessage = (
         value: string,
-        role: MessageRole
+        role: MessageRole,
+        file?: ChatFileResponse
+
     ): IMessage => {
 
         const time = new Date().toLocaleTimeString([], {
@@ -39,22 +42,26 @@ export const ChatPage = () => {
             id: Date.now() + Math.floor(Math.random() * 1000),
             content: value,
             role,
-            time
+            time,
+            file
         };
     };
 
     const { mutate, isPending, isError } = useMutation({
         mutationFn: async (value: string) => {
-            return facturacionService.chat({
+
+            const response = await facturacionService.chat({
                 message: value,
-                modelGemini:model.id
+                modelGemini: model.id
             });
+            return response;
         },
         onSuccess: (data) => {
 
             const botMessage = createMessage(
                 data?.answer,
-                'assistant'
+                'assistant',
+                data.file
             );
 
             setMessages((prev) => [

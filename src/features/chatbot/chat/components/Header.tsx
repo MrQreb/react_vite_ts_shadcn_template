@@ -19,7 +19,7 @@ export const Header = () => {
 
                     <section>
                         <h1 className="text-lg font-semibold tracking-tight">
-                            Chat Facturación
+                            Reporteador Facturación
                         </h1>
 
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -34,7 +34,6 @@ export const Header = () => {
 
                 <div>
                     <GeminiModelDropdown />
-
                 </div>
                 {/* <div className="hidden md:flex items-center gap-2 rounded-full border bg-muted/40 px-3 py-1 text-sm text-muted-foreground">
                     <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />

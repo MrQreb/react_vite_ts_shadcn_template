@@ -3,10 +3,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { IMessage } from '../interfaces/Imessage';
 import { chatMessageAnimation } from '../animations/chatMessageAnimation';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bot, User } from 'lucide-react';
+import { Bot, User, FileSpreadsheet, Download } from 'lucide-react';
 import { LoadingMessage } from './LoadingMessage';
 import { useEffect, useRef } from 'react';
 import { Streamdown } from 'streamdown';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { baseUrl } from '@/config/baseUrl';
+import { MessageFileCard } from './MessageFileCard';
 
 interface Props {
     /** Arreglo de objetos de los mensajes */
@@ -130,6 +134,15 @@ export const Messages = ({ messages, isPending }: Props) => {
                                             <Streamdown className="markdown">
                                                 {message.content}
                                             </Streamdown>
+
+                                            {/* Archivo adjunto */}
+                                            {message.file && (
+                                                <MessageFileCard
+                                                    fileName={message.file.fileName}
+                                                    url={message.file.url}
+                                                    contentType={message.file.contentType}
+                                                />
+                                            )}
 
                                         </div>
 

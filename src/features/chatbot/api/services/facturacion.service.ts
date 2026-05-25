@@ -1,6 +1,8 @@
 import { baseUrl } from "@/config/baseUrl";
-import type { ChatRequest } from "../dto/ChatRequest";
 import { api } from "@/shared/services/api";
+import type { ChatRequest } from "../dto/ChatRequest";
+import type { ChatResponse } from "../dto/ChatResponse";
+
 
 /** Servicio encargada de la logica de la parte del chat de facturacion */
 export class FacturacionService {
@@ -17,11 +19,13 @@ export class FacturacionService {
   /** Permite chatear con el modo de facturacion de la api
    * @param ChatRequest
     */
-  chat = async (data: ChatRequest): Promise<any> => {
-    const response = await api(this.url, {
+  chat = async (data: ChatRequest): Promise<ChatResponse> => {
+    const response:ChatResponse = await api(this.url, {
       body: JSON.stringify(data),
       method: "POST",
     });
+
+
     return response;
   };
 }
