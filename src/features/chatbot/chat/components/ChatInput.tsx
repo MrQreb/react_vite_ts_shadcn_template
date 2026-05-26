@@ -5,6 +5,7 @@ import { ArrowUp } from 'lucide-react';
 import { useRef } from 'react';
 import { chatInputAnimation, sendButtonAnimation } from '../animations';
 import { ToolsDropdown } from './ToolsDropdown';
+import { chatTourClassNames } from '../tour/chatTourClassNames';
 
 interface Props {
     /**
@@ -80,7 +81,7 @@ export const ChatInput = ({
     };
 
     return (
-        <div className="sticky bottom-0 bg-background/95 backdrop-blur">
+        <div className={`sticky bottom-0 bg-background/95 backdrop-blur ${chatTourClassNames.input}`}>
 
             <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
 
@@ -124,7 +125,7 @@ export const ChatInput = ({
 
                 </div>
 
-                <p className="mt-3 text-center text-md text-muted-foreground font-semibold">
+                <p className="mt-3 italic text-center text-md text-muted-foreground font-bold">
                     El asistente puede cometer errores. Verifica la información importante.
                 </p>
 

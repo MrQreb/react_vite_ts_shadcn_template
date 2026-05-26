@@ -111,6 +111,10 @@ export default defineConfig([
 
 Árbol simplificado (una sola app). El detalle completo está en [documentation/estructura-directorio.md](documentation/estructura-directorio.md).
 
+Otros docs útiles:
+
+- [Tutorial Driver.js (Chat + Modelos + Tools)](documentation/tutorial-driverjs-chat.md)
+
 ```
 root
 ├─ public/

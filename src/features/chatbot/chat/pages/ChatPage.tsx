@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { MESSAGES } from "../data/MESSAGES";
 import { Separator } from '@/components/ui/separator';
@@ -9,11 +9,27 @@ import { useMutation } from "@tanstack/react-query";
 import { useChatInputStore } from "../store/chatInput.store";
 import { useGeminiModel } from "../store/geminiModel.store";
 import type { ChatFileResponse } from "../../api/dto";
+// import { chatTour } from "../tour/chatTour";
 
 /** Pagina encargada del chatbot.
 * @returns Tsx component
 */
 export const ChatPage = () => {
+
+    // useEffect(() => {        
+    //     const alreadySeen = localStorage.getItem("chat-tour");
+
+    //     if (!alreadySeen) {
+
+    //         setTimeout(() => {
+    //             chatTour.drive();
+    //         }, 500);
+
+    //         localStorage.setItem("chat-tour", "true");
+    //     }
+
+    // }, []);
+
 
     //Estados globales
     const { text, setText } = useChatInputStore();
@@ -111,12 +127,16 @@ export const ChatPage = () => {
 
             <Card className="mx-auto flex h-full max-w-9xl flex-col overflow-hidden rounded-3xl border bg-background shadow-2xl">
 
+
+
                 {/* Header donde muestro la parte de tarjetia del cahtbo*/}
                 <Header />
 
                 {/* Contenedor de mensajes */}
-                <Messages isPending={isPending} messages={messages} />
-
+                <Messages
+                    isPending={isPending}
+                    messages={messages}
+                />
 
                 <Separator />
 
@@ -127,7 +147,6 @@ export const ChatPage = () => {
                     onSubmit={handleOnClick}
                     disabled={emptyTextInput || isPending}
                 />
-
             </Card>
         </div>
     );

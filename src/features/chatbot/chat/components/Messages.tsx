@@ -8,6 +8,7 @@ import { LoadingMessage } from './LoadingMessage';
 import { useEffect, useRef } from 'react';
 import { Streamdown } from 'streamdown';
 import { MessageFileCard } from './MessageFileCard';
+import { chatTourClassNames } from '../tour/chatTourClassNames';
 
 interface Props {
     /** Arreglo de objetos de los mensajes */
@@ -45,7 +46,7 @@ export const Messages = ({ messages, isPending }: Props) => {
     }, [messages]);
 
     return (
-        <div className="flex-1 overflow-hidden">
+        <div className={`flex-1 overflow-hidden ${chatTourClassNames.message}`}>
 
             {/* Contenedor scrolleable del chat */}
             <ScrollArea className="h-full w-full">
