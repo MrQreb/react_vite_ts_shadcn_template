@@ -14,6 +14,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   BarChart3,
+  Calendar,
+  CornerLeftUp,
+  CornerRightDown,
+  DollarSign,
+  Files,
   FileSearch,
   FileSpreadsheet,
   Hash,
@@ -33,7 +38,7 @@ type ToolItem = {
   icon: LucideIcon;
   iconClassName: string;
   prompt?: string;
-  children?: ToolItem[]; 
+  children?: ToolItem[];
 };
 
 /**
@@ -52,62 +57,64 @@ type ToolSection = {
 const sections: ToolSection[] = [
   {
     title: 'Consultas',
-    description: 'Facturas y métricas',
+    description: 'Facturas y ventas',
     icon: FileSearch,
     items: [
       {
-        title: 'Obtener Factura',
-        description: 'Buscar por número de factura.',
-        icon: Hash,
-        iconClassName: 'text-blue-500',
-        prompt: 'dame la factura 441093'
-      },
-      {
-        title: 'Consultar Facturas',
-        description: 'Filtrar por fechas y clientes.',
-        icon: FileSearch,
-        iconClassName: 'text-violet-500',
-        prompt: 'facturas del 2026-05-01 al 2026-05-21'
-      },
-      {
-        title: 'Resumen',
-        description: 'Totales y estadísticas.',
-        icon: BarChart3,
+        title: 'Facturas',
+        description: 'Permite ver los datos de facturas y sus detalles',
+        icon: Files,
         iconClassName: 'text-emerald-500',
-        prompt: 'resumen de facturas'
-      },
-      {
-        title: 'Producto Vendido',
-        description: 'Consultar ventas por producto.',
-        icon: PackageSearch,
-        iconClassName: 'text-orange-500',
         children: [
           {
-            title: 'Por código',
-            description: 'Buscar por SKU exacto',
-            icon: Hash,
-            iconClassName: 'text-orange-400',
-            prompt: 'ventas de BRFL0602KMECH00'
+            title: 'Por rango de fechas',
+            description: 'Buscar por un rango de fechas en especifico',
+            icon: Calendar,
+            iconClassName: 'text-green-400',
+            prompt: 'Dame las facturas entre el 2026-01-01 y 2026-01-31'
           },
           {
-            title: 'Por rango de fechas',
-            description: 'Ventas filtradas por periodo',
+            title: 'Por número de factura',
+            description: 'Buscar una factura y sus detalles por número de factura',
             icon: BarChart3,
-            iconClassName: 'text-orange-400',
-            prompt: 'ventas del 2026-05-01 al 2026-05-21'
+            iconClassName: 'text-green-400',
+            prompt: 'Dame la factura número 412475'
           }
+        ]
+
+      },
+      {
+        title: 'Productos Vendido',
+        description: 'Consultar ingreso, libras, cajas y producto.',
+        icon: DollarSign,
+        iconClassName: 'text-green-500',
+        children: [
+          {
+            title: 'Productos más vendidos',
+            description: 'Productos mas vendidos por un rango de fechas',
+            icon: CornerLeftUp ,
+            iconClassName: 'text-green-500',
+            prompt: 'Dime los 20 productos más vendidos del 2025-01-01 hasta 2025-12-31'
+          },
+          {
+            title: 'Productos menos vendidos',
+            description: 'Productos menos vendidos por un rango de fechas',
+            icon: CornerRightDown ,
+            iconClassName: 'text-green-500',
+            prompt: 'Dime los 20 productos menos vendidos del 2025-01-01 hasta 2025-12-31'
+          },
         ]
       }
     ]
   },
   {
     title: 'Excels',
-    description: 'Exportaciones y reportes',
+    description: 'Reportes de Exel',
     icon: FileSpreadsheet,
     items: [
       {
-        title: 'Exportar Facturas',
-        description: 'Descargar listado de facturas.',
+        title: 'Reporte de factura',
+        description: '',
         icon: FileSpreadsheet,
         iconClassName: 'text-green-500',
         prompt: 'exportar facturas de hoy en Excel'
@@ -296,7 +303,7 @@ export const ToolsDropdown = () => {
           );
         })}
 
-        
+
       </DropdownMenuContent>
     </DropdownMenu>
   );

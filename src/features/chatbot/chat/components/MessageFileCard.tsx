@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { baseUrl } from "@/config/baseUrl";
 
@@ -26,6 +25,7 @@ export const MessageFileCard = ({
     size
 }: Props) => {
 
+    /** Url de la ruta fisica del archivo para descargar */
     const href:string = `${baseUrl}/${url}`;
 
     /** Saber si es Excel */
@@ -34,18 +34,7 @@ export const MessageFileCard = ({
         contentType?.includes("excel");
 
     return (
-        <Card
-            className="
-                mt-4
-                rounded-2xl
-                border
-                bg-background/60
-                p-4
-                shadow-sm
-            "
-        >
-
-            <div className="flex items-center justify-between gap-4">
+            <section className="flex items-center justify-between gap-4">
 
                 {/* Información */}
                 <div className="flex min-w-0 items-center gap-3">
@@ -126,7 +115,6 @@ export const MessageFileCard = ({
                     </a>
                 </Button>
 
-            </div>
-        </Card>
+            </section>
     );
 };
