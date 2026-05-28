@@ -13,17 +13,25 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import {
+    ArrowDownWideNarrow,
   BarChart3,
   Calendar,
+  CalendarRange,
   CornerLeftUp,
   CornerRightDown,
   DollarSign,
   Files,
   FileSearch,
   FileSpreadsheet,
-  Hash,
-  PackageSearch,
+  ListFilter,
+  ListOrdered,
+  Medal,
+  Sheet,
   Sparkles,
+  TrendingUp,
+  Trophy,
+  UserRoundSearch,
+  Users,
   Wrench,
   type LucideIcon
 } from 'lucide-react';
@@ -57,74 +65,173 @@ type ToolSection = {
 const sections: ToolSection[] = [
   {
     title: 'Consultas',
-    description: 'Facturas y ventas',
+    description: 'Consultas de facturación, ventas y análisis',
     icon: FileSearch,
     items: [
       {
         title: 'Facturas',
-        description: 'Permite ver los datos de facturas y sus detalles',
+        description: 'Consulta información de facturas y sus detalles',
         icon: Files,
         iconClassName: 'text-emerald-500',
         children: [
           {
             title: 'Por rango de fechas',
-            description: 'Buscar por un rango de fechas en especifico',
+            description: 'Busca facturas dentro de un periodo específico',
             icon: Calendar,
             iconClassName: 'text-green-400',
             prompt: 'Dame las facturas entre el 2026-01-01 y 2026-01-31'
           },
           {
             title: 'Por número de factura',
-            description: 'Buscar una factura y sus detalles por número de factura',
+            description: 'Consulta una factura específica con sus detalles',
             icon: BarChart3,
             iconClassName: 'text-green-400',
-            prompt: 'Dame la factura número 412475'
+            prompt: 'Dame los detalles de la facturas facturas 412465, 412466, 412467, 412475, 412480'
           }
         ]
-
       },
+
       {
-        title: 'Productos Vendido',
-        description: 'Consultar ingreso, libras, cajas y producto.',
+        title: 'Productos vendidos',
+        description: 'Consulta ingresos, libras, cajas y productos vendidos',
         icon: DollarSign,
         iconClassName: 'text-green-500',
         children: [
           {
             title: 'Productos más vendidos',
-            description: 'Productos mas vendidos por un rango de fechas',
-            icon: CornerLeftUp ,
+            description: 'Top de productos vendidos en un periodo',
+            icon: CornerLeftUp,
             iconClassName: 'text-green-500',
             prompt: 'Dime los 20 productos más vendidos del 2025-01-01 hasta 2025-12-31'
           },
           {
             title: 'Productos menos vendidos',
-            description: 'Productos menos vendidos por un rango de fechas',
-            icon: CornerRightDown ,
+            description: 'Productos con menor volumen de venta',
+            icon: CornerRightDown,
             iconClassName: 'text-green-500',
             prompt: 'Dime los 20 productos menos vendidos del 2025-01-01 hasta 2025-12-31'
+          }
+        ]
+      },
+
+      {
+        title: 'Ventas',
+        description: 'Consultas de ventas y productos vendidos',
+        icon: TrendingUp,
+        iconClassName: 'text-cyan-500',
+        children: [
+          {
+            title: 'Ventas por rango de fechas',
+            description: 'Consulta resumen de ventas por periodo',
+            icon: CalendarRange,
+            iconClassName: 'text-cyan-500',
+            prompt: 'Dame las ventas del 2025-01-01 al 2025-12-31'
+          },
+          {
+            title: 'Productos más vendidos',
+            description: 'Consulta ranking de productos vendidos',
+            icon: Trophy,
+            iconClassName: 'text-cyan-500',
+            prompt: 'Dime los 50 productos más vendidos del 2025'
+          },
+          {
+            title: 'Productos menos vendidos',
+            description: 'Consulta productos con menor venta',
+            icon: ArrowDownWideNarrow,
+            iconClassName: 'text-cyan-500',
+            prompt: 'Dime los productos menos vendidos del 2025'
           },
         ]
-      }
+      },
     ]
   },
+
   {
-    title: 'Excels',
-    description: 'Reportes de Exel',
-    icon: FileSpreadsheet,
+    title: 'Reportes Excel',
+    description: 'Generación de archivos Excel para facturación y análisis',
+    icon: Sheet,
     items: [
       {
-        title: 'Reporte de factura',
-        description: '',
+        title: 'Facturas',
+        description: 'Exportación de facturas y detalles',
         icon: FileSpreadsheet,
-        iconClassName: 'text-green-500',
-        prompt: 'exportar facturas de hoy en Excel'
+        iconClassName: 'text-emerald-500',
+        children: [
+          {
+            title: 'Por planta, fecha y cliente',
+            description: 'Genera reportes usando filtros avanzados',
+            icon: ListFilter,
+            iconClassName: 'text-blue-500',
+            prompt: 'Generame el excel de las facturas del enero del 2023 de la planta 03 y con codigo de cliente M01'
+          },
+          {
+            title: 'Por números de factura',
+            description: 'Exporta múltiples facturas específicas',
+            icon: ListOrdered,
+            iconClassName: 'text-blue-500',
+            prompt: 'Generame el excel de las facturas 412465, 412466, 412467, 412475, 412480'
+          }
+        ]
       },
+
       {
-        title: 'Exportar Resumen',
-        description: 'Generar reporte resumido.',
-        icon: FileSpreadsheet,
-        iconClassName: 'text-lime-500',
-        prompt: 'exportar resumen en Excel'
+        title: 'Ventas',
+        description: 'Reportes de ventas y productos vendidos',
+        icon: TrendingUp,
+        iconClassName: 'text-cyan-500',
+        children: [
+          {
+            title: 'Ventas por rango de fechas',
+            description: 'Resumen de ventas por periodo',
+            icon: CalendarRange,
+            iconClassName: 'text-cyan-500',
+            prompt: 'Generame un excel con las ventas del 2025-01-01 al 2025-12-31'
+          },
+          {
+            title: 'Productos más vendidos',
+            description: 'Exporta ranking de productos vendidos',
+            icon: Trophy,
+            iconClassName: 'text-cyan-500',
+            prompt: 'Generame un excel con los 50 productos más vendidos del 2025'
+          },
+          {
+            title: 'Productos menos vendidos',
+            description: 'Exporta productos con menor venta',
+            icon: ArrowDownWideNarrow,
+            iconClassName: 'text-cyan-500',
+            prompt: 'Generame un excel con los productos menos vendidos del 2025'
+          },
+          // {
+          //   title: 'Por clave de producto',
+          //   description: 'Exporta productos su clave',
+          //   icon: CaseUpper ,
+          //   iconClassName: 'text-cyan-500',
+          //   prompt: 'Generame un excel de productos vendidos del producto BRFL1250GSELE00'
+          // }
+        ]
+      },
+
+      {
+        title: 'Clientes',
+        description: 'Reportes y análisis por cliente',
+        icon: Users,
+        iconClassName: 'text-violet-500',
+        children: [
+          {
+            title: 'Facturas por cliente',
+            description: 'Exporta facturas de un cliente específico',
+            icon: UserRoundSearch,
+            iconClassName: 'text-violet-500',
+            prompt: 'Generame un excel con las facturas del cliente M01'
+          },
+          {
+            title: 'Clientes con más compras',
+            description: 'Ranking de clientes por volumen de compra',
+            icon: Medal,
+            iconClassName: 'text-violet-500',
+            prompt: 'Generame un excel con los clientes con más compras del 2025'
+          }
+        ]
       }
     ]
   }
