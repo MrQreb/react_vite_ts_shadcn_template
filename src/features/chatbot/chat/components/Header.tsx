@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Bot, DollarSign } from "lucide-react";
 import { GeminiModelDropdown } from './GeminiModelDropdown';
 import { chatTourClassNames } from "../tour/chatTourClassNames";
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 /**
  * Componente visual de como muestra el header del contenedor del chatbot
  * @returns Tsx component

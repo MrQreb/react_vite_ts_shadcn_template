@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { MESSAGES } from "../data/MESSAGES";
 import { Separator } from '@/components/ui/separator';
@@ -63,7 +63,7 @@ export const ChatPage = () => {
         };
     };
 
-    const { mutate, isPending, isError } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: async (value: string) => {
 
             const response = await facturacionService.chat({

@@ -1,4 +1,4 @@
-import SidebarLayout from "@/app/Layouts/SideBarLayout";
+import SidebarLayout from "@/app/Layouts/SidebarLayout";
 import { rootRoute } from "@/app/router/__root";
 import UsersPage from "@/examples/UsersPage";
 import { createRoute } from "@tanstack/react-router";
