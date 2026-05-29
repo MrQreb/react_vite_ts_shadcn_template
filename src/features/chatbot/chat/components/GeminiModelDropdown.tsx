@@ -6,11 +6,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
-    Sparkles,
     ChevronDown,
     Check,
-    Zap,
-    BrainCircuit
 } from "lucide-react";
 
 import { motion } from "framer-motion";
@@ -28,17 +25,8 @@ import {
     GEMINI_MODELS,
     useGeminiModel
 } from "../store/geminiModel.store";
+import { Label } from "@/components/ui/label";
 
-/**
- * Mapa de iconos usados por cada modelo Gemini.
- *
- * La key corresponde al id del modelo.
- */
-const MODEL_ICONS: any = {
-    "gemini-2.5-flash-lite": Zap,
-    "gemini-2.5-flash": Sparkles,
-    "gemini-2.5-pro": BrainCircuit,
-};
 
 /**
  * Dropdown encargado de seleccionar
@@ -52,14 +40,7 @@ export const GeminiModelDropdown = () => {
         model,
         setModel
     } = useGeminiModel();
-
-    /**
-     * Icono correspondiente
-     * al modelo actualmente seleccionado.
-     */
-    const CurrentIcon =
-        MODEL_ICONS[model.id];
-
+    
     return (
 
         <DropdownMenu>
@@ -105,7 +86,7 @@ export const GeminiModelDropdown = () => {
                         "
                     >
 
-                        <CurrentIcon className="size-3.5" />
+                        <model.icon className="size-3.5" />
 
                     </motion.div>
 
@@ -149,7 +130,6 @@ export const GeminiModelDropdown = () => {
                     p-2
                 "
             >
-
                 {GEMINI_MODELS.map((item, index) => {
 
                     /**
@@ -160,11 +140,10 @@ export const GeminiModelDropdown = () => {
                         item.id === model.id;
 
                     /**
-                     * Icono correspondiente
-                     * al modelo iterado.
+                     * Icono actual del item.
                      */
                     const Icon =
-                        MODEL_ICONS[item.id];
+                        item.icon;
 
                     return (
 
@@ -209,25 +188,29 @@ export const GeminiModelDropdown = () => {
 
                                         <Icon
                                             className="
-                                                size-3.5
-                                                text-muted-foreground
+                                            size-3.5
+                                            text-muted-foreground
                                             "
                                         />
 
                                     </motion.div>
 
                                     {/* Texto */}
-                                    <div className="flex flex-col">
+                                    <section className="flex flex-col ml-3">
 
-                                        <span className="text-xs font-medium">
+                                        <Label className="text-xs font-medium">
                                             {item.label}
-                                        </span>
+                                        </Label>
 
-                                        <span className="text-[10px] text-muted-foreground">
+                                        <Label className="text-[10px] text-muted-foreground">
                                             {item.description}
-                                        </span>
+                                        </Label>
 
-                                    </div>
+                                        <Label className="mt-2 text-[9px] font-bold text-muted-foreground">
+                                            {item.name}
+                                        </Label>
+
+                                    </section>
 
                                 </div>
 
@@ -249,9 +232,7 @@ export const GeminiModelDropdown = () => {
                                     >
 
                                         <Check className="size-3" />
-
                                     </motion.div>
-
                                 )}
 
                             </DropdownMenuItem>
@@ -259,7 +240,6 @@ export const GeminiModelDropdown = () => {
                         </motion.div>
                     );
                 })}
-
             </DropdownMenuContent>
 
         </DropdownMenu>
